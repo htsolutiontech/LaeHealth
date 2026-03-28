@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthV — Pilot Dashboard v1.0</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #0B0F1A;
+  --panel:     #111827;
+  --panel2:    #161D2F;
+  --border:    #1E2A42;
+  --border2:   #243048;
+  --blue:      #2D7FF9;
+  --blue-dim:  #1A4B96;
+  --teal:      #00C9A7;
+  --teal-dim:  #006B58;
+  --amber:     #F59E0B;
+  --amber-dim: #7A4F06;
+  --red:       #EF4444;
+  --red-dim:   #7F1D1D;
+  --green:     #10B981;
+  --green-dim: #064E3B;
+  --purple:    #8B5CF6;
+  --txt:       #E2E8F0;
+  --txt2:      #94A3B8;
+  --txt3:      #4A5568;
+  --mono:      'DM Mono', monospace;
+  --head:      'Syne', sans-serif;
+  --body:      'DM Sans', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font-family:var(--body)}
+
+/* ── Layout ── */
+.app{display:grid;grid-template-rows:52px 1fr;height:100vh;overflow:hidden}
+.topbar{
+  background:var(--panel);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0;padding:0;
+  position:relative;z-index:100;
+}
+.logo{
+  padding:0 20px;display:flex;align-items:center;gap:10px;
+  border-right:1px solid var(--border);height:100%;
+  font-family:var(--head);font-weight:800;font-size:15px;color:var(--teal);
+  letter-spacing:-.3px;white-space:nowrap;
+}
+.logo span{color:var(--txt2);font-weight:400;font-size:11px;margin-left:2px}
+.tabs{display:flex;height:100%;flex:1}
+.tab{
+  padding:0 20px;display:flex;align-items:center;gap:8px;cursor:pointer;
+  font-size:12px;font-weight:500;color:var(--txt2);border-right:1px solid var(--border);
+  transition:all .2s;white-space:nowrap;position:relative;
+  font-family:var(--body);letter-spacing:.2px;
+}
+.tab:hover{color:var(--txt);background:rgba(255,255,255,.03)}
+.tab.active{color:var(--txt);background:rgba(45,127,249,.06)}
+.tab.active::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--blue);
+}
+.tab.active.teal::after{background:var(--teal)}
+.tab.active.amber::after{background:var(--amber)}
+.tab.active.red::after{background:var(--red)}
+.tab-dot{width:7px;height:7px;border-radius:50%}
+.dot-blue{background:var(--blue)}
+.dot-teal{background:var(--teal)}
+.dot-amber{background:var(--amber)}
+.dot-red{background:var(--red);animation:pulse-dot 1s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+
+.top-right{margin-left:auto;display:flex;align-items:center;gap:12px;padding:0 16px}
+.badge{
+  font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:3px;
+  background:var(--red-dim);color:var(--red);border:1px solid var(--red);
+  animation:pulse-dot 1.2s infinite;
+}
+.time-chip{font-family:var(--mono);font-size:11px;color:var(--txt3)}
+.user-chip{
+  width:28px;height:28px;border-radius:50%;background:var(--blue-dim);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--blue);font-family:var(--head);
+}
+
+/* ── Panels ── */
+.main{overflow:hidden;position:relative}
+.panel-view{position:absolute;inset:0;overflow:hidden;display:none;opacity:0;transition:opacity .25s}
+.panel-view.active{display:flex;opacity:1}
+
+/* ═══════════════════════════════════════════
+   PANEL 1 — Hospital at Home Monitor
+═══════════════════════════════════════════ */
+#panel-hah{flex-direction:row;gap:0}
+.hah-left{width:280px;min-width:280px;background:var(--panel2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.hah-center{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.hah-right{width:260px;min-width:260px;background:var(--panel2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+
+.section-head{
+  padding:12px 16px 10px;border-bottom:1px solid var(--border);
+  font-family:var(--head);font-size:11px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--txt3);display:flex;align-items:center;justify-content:space-between;
+}
+.section-head .count{font-family:var(--mono);font-size:11px;color:var(--txt2)}
+
+.patient-list{flex:1;overflow-y:auto;padding:8px}
+.patient-list::-webkit-scrollbar{width:3px}
+.patient-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.pt-card{
+  padding:10px 12px;border-radius:6px;margin-bottom:6px;cursor:pointer;
+  border:1px solid transparent;transition:all .18s;position:relative;
+  background:rgba(255,255,255,.02);
+}
+.pt-card:hover{background:rgba(255,255,255,.04);border-color:var(--border2)}
+.pt-card.selected{background:rgba(45,127,249,.08);border-color:var(--blue-dim)}
+.pt-card.alert-red{border-left:3px solid var(--red);background:rgba(239,68,68,.06)}
+.pt-card.alert-yellow{border-left:3px solid var(--amber);background:rgba(245,158,11,.05)}
+.pt-card.alert-green{border-left:3px solid var(--green)}
+
+.pt-name{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.pt-meta{font-size:10px;color:var(--txt2);font-family:var(--mono)}
+.pt-vitals{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.vital-chip{
+  font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;
+  background:var(--bg);border:1px solid var(--border2);color:var(--txt2);
+}
+.vital-chip.warn{border-color:var(--amber);color:var(--amber);background:rgba(245,158,11,.08)}
+.vital-chip.danger{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.1);animation:pulse-dot 1s infinite}
+.vital-chip.ok{border-color:var(--green-dim);color:var(--green)}
+
+.alert-badge{
+  position:absolute;top:10px;right:10px;
+  font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:2px;font-weight:500;
+}
+.ab-red{background:var(--red-dim);color:var(--red);border:1px solid var(--red)}
+.ab-yellow{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)}
+.ab-green{background:var(--green-dim);color:var(--green);border:1px solid var(--green)}
+
+/* Center chart area */
+.chart-header{padding:14px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.chart-patient-name{font-family:var(--head);font-size:16px;font-weight:700;color:var(--txt)}
+.chart-meta{font-size:11px;color:var(--txt2);font-family:var(--mono);margin-top:2px}
+
+.vital-tabs{display:flex;gap:0;padding:0 20px;border-bottom:1px solid var(--border);background:var(--panel)}
+.vt{
+  padding:8px 14px;font-size:11px;font-weight:500;cursor:pointer;
+  color:var(--txt2);border-bottom:2px solid transparent;transition:.15s;
+  font-family:var(--mono);
+}
+.vt.active{color:var(--teal);border-color:var(--teal)}
+
+.chart-area{flex:1;padding:16px 20px;overflow:hidden;position:relative}
+.chart-canvas{width:100%;height:100%;position:relative}
+
+/* Simple SVG chart */
+.sparkline{overflow:visible}
+
+/* Right panel */
+.alert-feed{flex:1;overflow-y:auto;padding:8px}
+.alert-feed::-webkit-scrollbar{width:3px}
+.alert-feed::-webkit-scrollbar-thumb{background:var(--border2)}
+
+.alert-item{
+  padding:10px 12px;border-radius:5px;margin-bottom:6px;
+  background:rgba(255,255,255,.02);border:1px solid var(--border);
+  font-size:11px;line-height:1.5;
+}
+.alert-item.red{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.3)}
+.alert-item.yellow{background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.25)}
+.alert-time{font-family:var(--mono);font-size:9px;color:var(--txt3);margin-bottom:3px}
+.alert-msg{color:var(--txt2);font-size:11px}
+.alert-msg strong{color:var(--txt)}
+.alert-action{
+  margin-top:8px;display:flex;gap:6px;
+}
+.btn-sm{
+  padding:4px 10px;border-radius:3px;font-size:10px;font-weight:600;cursor:pointer;
+  border:1px solid;transition:.15s;font-family:var(--body);letter-spacing:.3px;
+}
+.btn-red{background:var(--red-dim);color:var(--red);border-color:var(--red)}
+.btn-red:hover{background:var(--red);color:#fff}
+.btn-blue{background:var(--blue-dim);color:var(--blue);border-color:var(--blue)}
+.btn-blue:hover{background:var(--blue);color:#fff}
+.btn-teal{background:var(--teal-dim);color:var(--teal);border-color:var(--teal)}
+.btn-teal:hover{background:var(--teal);color:#0B0F1A}
+.btn-amber{background:var(--amber-dim);color:var(--amber);border-color:var(--amber)}
+.btn-amber:hover{background:var(--amber);color:#000}
+
+/* drone CTA */
+.drone-cta{
+  margin:8px;padding:12px;border-radius:6px;
+  background:linear-gradient(135deg,rgba(0,201,167,.1),rgba(45,127,249,.08));
+  border:1px solid rgba(0,201,167,.25);
+}
+.drone-cta-title{font-size:11px;font-weight:600;color:var(--teal);margin-bottom:6px}
+.drone-cta-body{font-size:10px;color:var(--txt2);line-height:1.5;margin-bottom:8px}
+
+/* ═══════════════════════════════════════════
+   PANEL 2 — LAE Flight Operations
+═══════════════════════════════════════════ */
+#panel-lae{flex-direction:column}
+.lae-top{display:flex;height:60%}
+.lae-map{flex:1;position:relative;overflow:hidden;background:#0D1421}
+.lae-sidebar{width:300px;background:var(--panel2);border-left:1px solid var(--border);display:flex;flex-direction:column}
+.lae-bottom{height:40%;border-top:1px solid var(--border);display:flex;background:var(--panel)}
+
+/* Map grid */
+.map-bg{position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(30,42,66,.5) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(30,42,66,.5) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.map-bg::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 50%, rgba(45,127,249,.05) 0%, transparent 70%);
+}
+
+/* SVG map overlay */
+.map-svg{position:absolute;inset:0;width:100%;height:100%}
+
+/* Hospital markers */
+.hosp-marker{
+  position:absolute;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;z-index:10;
+}
+.hosp-dot{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid;display:flex;align-items:center;justify-content:center;
+  font-size:7px;font-weight:700;font-family:var(--head);
+  position:relative;
+}
+.hosp-dot::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid;opacity:.3;animation:sonar 2s infinite;
+}
+@keyframes sonar{0%{transform:scale(1);opacity:.4}100%{transform:scale(2.5);opacity:0}}
+.hosp-label{
+  font-size:9px;font-weight:600;font-family:var(--mono);
+  background:rgba(11,15,26,.85);padding:2px 6px;border-radius:2px;
+  white-space:nowrap;border:1px solid var(--border2);color:var(--txt2);
+}
+
+/* Drone icon */
+.drone-icon{
+  position:absolute;transform:translate(-50%,-50%);
+  z-index:20;pointer-events:none;transition:left .05s linear,top .05s linear;
+}
+.drone-svg{animation:drone-hover .8s ease-in-out infinite alternate}
+@keyframes drone-hover{0%{transform:translateY(0)}100%{transform:translateY(-2px)}}
+
+/* Flight path */
+.flight-path{position:absolute;inset:0;pointer-events:none}
+
+/* Status bar */
+.flight-status-bar{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
+  background:rgba(11,15,26,.92);border:1px solid var(--teal);
+  border-radius:20px;padding:6px 18px;display:flex;align-items:center;gap:14px;
+  font-family:var(--mono);font-size:11px;z-index:15;white-space:nowrap;
+  backdrop-filter:blur(8px);
+}
+.fstat-item{display:flex;align-items:center;gap:5px;color:var(--txt2)}
+.fstat-item .val{color:var(--teal);font-weight:500}
+.fstat-divider{width:1px;height:12px;background:var(--border2)}
+
+/* Mission list */
+.mission-list{flex:1;overflow-y:auto;padding:8px}
+.mission-list::-webkit-scrollbar{width:3px}
+.mission-list::-webkit-scrollbar-thumb{background:var(--border2)}
+.mission-card{
+  padding:10px 12px;border-radius:5px;margin-bottom:6px;
+  border:1px solid var(--border);background:rgba(255,255,255,.02);
+  cursor:pointer;transition:.15s;
+}
+.mission-card:hover{background:rgba(255,255,255,.04)}
+.mission-card.active{border-color:var(--teal);background:rgba(0,201,167,.07)}
+.mission-priority{
+  font-size:9px;font-weight:700;font-family:var(--mono);
+  padding:1px 5px;border-radius:2px;margin-bottom:5px;display:inline-block;
+}
+.mp-stat{background:var(--red-dim);color:var(--red);border:1px solid var(--red)}
+.mp-urg{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)}
+.mp-rou{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue)}
+.mission-title{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:3px}
+.mission-route{font-size:10px;color:var(--txt2);font-family:var(--mono)}
+.mission-eta{font-size:11px;color:var(--teal);font-family:var(--mono);font-weight:500}
+
+/* Bottom telemetry */
+.telem-panel{flex:1;padding:14px 16px;border-right:1px solid var(--border)}
+.telem-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3);margin-bottom:10px;font-family:var(--head)}
+.telem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.telem-item{background:var(--panel2);border-radius:5px;padding:8px 10px;border:1px solid var(--border)}
+.telem-val{font-family:var(--mono);font-size:18px;font-weight:400;color:var(--teal);line-height:1}
+.telem-unit{font-size:9px;color:var(--txt3);margin-top:2px;font-family:var(--mono)}
+.telem-lbl{font-size:10px;color:var(--txt2);margin-top:4px}
+
+.payload-panel{width:240px;padding:14px 16px;border-right:1px solid var(--border)}
+.fhir-panel{flex:1;padding:14px 16px;overflow-y:auto}
+.fhir-panel::-webkit-scrollbar{width:3px}
+.fhir-panel::-webkit-scrollbar-thumb{background:var(--border2)}
+
+.fhir-entry{
+  font-family:var(--mono);font-size:10px;line-height:1.7;
+  border-left:2px solid var(--border2);padding:4px 8px;margin-bottom:4px;
+  color:var(--txt2);
+}
+.fhir-key{color:var(--blue)}
+.fhir-val{color:var(--green)}
+.fhir-str{color:var(--amber)}
+
+/* Progress bar */
+.prog-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;border-radius:2px;background:var(--teal);transition:width .5s}
+
+/* ═══════════════════════════════════════════
+   PANEL 3 — Predictive Maintenance
+═══════════════════════════════════════════ */
+#panel-pm{flex-direction:column;overflow:hidden}
+.pm-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;background:var(--panel)}
+.pm-stat-card{
+  padding:10px 16px;border-radius:5px;background:var(--panel2);
+  border:1px solid var(--border);display:flex;align-items:center;gap:10px;
+}
+.pm-stat-icon{font-size:18px}
+.pm-stat-num{font-family:var(--mono);font-size:20px;font-weight:400;line-height:1}
+.pm-stat-lbl{font-size:10px;color:var(--txt2);margin-top:1px}
+.pm-body{flex:1;display:flex;overflow:hidden}
+.pm-list{width:380px;min-width:380px;border-right:1px solid var(--border);overflow-y:auto;padding:10px}
+.pm-list::-webkit-scrollbar{width:3px}
+.pm-list::-webkit-scrollbar-thumb{background:var(--border2)}
+
+.device-card{
+  padding:12px 14px;border-radius:6px;margin-bottom:8px;
+  background:var(--panel2);border:1px solid var(--border);
+  cursor:pointer;transition:.15s;
+}
+.device-card:hover{border-color:var(--border2);background:rgba(255,255,255,.03)}
+.device-card.selected{border-color:var(--blue-dim);background:rgba(45,127,249,.06)}
+.device-card.critical{border-left:3px solid var(--red);animation:border-pulse 1.5s infinite}
+.device-card.warning{border-left:3px solid var(--amber)}
+.device-card.good{border-left:3px solid var(--green)}
+@keyframes border-pulse{0%,100%{border-color:var(--red)}50%{border-color:rgba(239,68,68,.3)}}
+
+.dev-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.dev-name{font-size:12px;font-weight:600;color:var(--txt)}
+.dev-type{font-size:10px;color:var(--txt2);font-family:var(--mono)}
+.health-bar{height:5px;border-radius:3px;background:var(--border);overflow:hidden;margin:6px 0}
+.hb-fill{height:100%;border-radius:3px;transition:width .5s}
+.dev-metrics{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.dev-metric{font-family:var(--mono);font-size:9px;padding:2px 5px;border-radius:2px;background:var(--bg);border:1px solid var(--border2);color:var(--txt2)}
+
+.pm-detail{flex:1;padding:20px;overflow-y:auto}
+.pm-detail::-webkit-scrollbar{width:3px}
+.pm-detail::-webkit-scrollbar-thumb{background:var(--border2)}
+
+.detail-chart{height:160px;background:var(--panel2);border-radius:6px;border:1px solid var(--border);padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.maintenance-timeline{background:var(--panel2);border-radius:6px;border:1px solid var(--border);padding:14px;margin-bottom:12px}
+.timeline-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.timeline-item:last-child{border-bottom:none}
+.tl-dot{width:8px;height:8px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.tl-content{flex:1}
+.tl-title{font-size:11px;font-weight:600;color:var(--txt)}
+.tl-meta{font-size:10px;color:var(--txt2);font-family:var(--mono);margin-top:1px}
+
+/* ═══════════════════════════════════════════
+   PANEL 4 — Emergency Dispatch
+═══════════════════════════════════════════ */
+#panel-emergency{flex-direction:column;overflow:hidden}
+.emg-header{
+  padding:0 20px;display:flex;align-items:center;gap:16px;
+  background:rgba(239,68,68,.08);border-bottom:1px solid rgba(239,68,68,.2);
+  min-height:52px;
+}
+.emg-title{font-family:var(--head);font-size:14px;font-weight:800;color:var(--red);letter-spacing:-.3px}
+.emg-live{
+  font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:3px;
+  background:var(--red-dim);color:var(--red);border:1px solid var(--red);
+  animation:pulse-dot 1s infinite;
+}
+.emg-body{flex:1;display:flex;overflow:hidden}
+.emg-feed{width:340px;border-right:1px solid var(--border);overflow-y:auto;padding:10px}
+.emg-feed::-webkit-scrollbar{width:3px}
+.emg-feed::-webkit-scrollbar-thumb{background:var(--border2)}
+
+.emg-card{
+  padding:12px 14px;border-radius:6px;margin-bottom:8px;
+  background:var(--panel2);border:1px solid var(--border);
+  cursor:pointer;transition:.15s;
+}
+.emg-card:hover{border-color:var(--border2)}
+.emg-card.active{border-color:var(--red);background:rgba(239,68,68,.07)}
+.emg-card.resolved{opacity:.5;border-color:var(--green-dim)}
+.emg-type{
+  font-size:10px;font-weight:700;font-family:var(--mono);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:5px;
+}
+.et-cardiac{color:var(--red)}
+.et-stroke{color:var(--purple)}
+.et-anaphylaxis{color:var(--amber)}
+.et-supply{color:var(--blue)}
+.emg-patient{font-size:12px;font-weight:600;color:var(--txt);margin-bottom:2px}
+.emg-location{font-size:10px;color:var(--txt2);font-family:var(--mono)}
+.emg-timeline-bar{
+  margin-top:8px;display:flex;align-items:center;gap:6px;
+}
+.timeline-track{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.timeline-progress{height:100%;border-radius:2px;transition:width 1s linear}
+.emg-status{font-family:var(--mono);font-size:10px;font-weight:500}
+
+.emg-detail{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.emg-detail::-webkit-scrollbar{width:3px}
+.emg-detail::-webkit-scrollbar-thumb{background:var(--border2)}
+
+.emg-chain{background:var(--panel2);border-radius:8px;border:1px solid var(--border);padding:16px}
+.chain-title{font-family:var(--head);font-size:12px;font-weight:700;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.chain-step{
+  display:flex;align-items:flex-start;gap:10px;padding:8px 0;
+  border-bottom:1px solid var(--border);position:relative;
+}
+.chain-step:last-child{border-bottom:none}
+.chain-num{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;font-family:var(--mono);
+  flex-shrink:0;margin-top:1px;
+}
+.cn-done{background:var(--green-dim);color:var(--green);border:1px solid var(--green)}
+.cn-active{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue);animation:pulse-dot 1s infinite}
+.cn-pending{background:var(--border);color:var(--txt3);border:1px solid var(--border2)}
+.chain-content{flex:1}
+.chain-action{font-size:11px;font-weight:600;color:var(--txt)}
+.chain-detail{font-size:10px;color:var(--txt2);font-family:var(--mono);margin-top:2px;line-height:1.5}
+.chain-time{font-family:var(--mono);font-size:9px;color:var(--txt3);margin-top:3px}
+
+.vitals-panel{background:var(--panel2);border-radius:8px;border:1px solid var(--border);padding:14px}
+.vitals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.vital-box{background:var(--bg);border-radius:5px;padding:10px;border:1px solid var(--border);text-align:center}
+.vital-v{font-family:var(--mono);font-size:22px;color:var(--txt);line-height:1}
+.vital-v.critical{color:var(--red);animation:pulse-dot .8s infinite}
+.vital-v.warn{color:var(--amber)}
+.vital-v.ok{color:var(--green)}
+.vital-u{font-size:9px;color:var(--txt3);font-family:var(--mono);margin-top:2px}
+.vital-n{font-size:10px;color:var(--txt2);margin-top:4px}
+
+/* Drone deploy card */
+.drone-deploy{
+  background:linear-gradient(135deg,rgba(0,201,167,.08),rgba(45,127,249,.06));
+  border-radius:8px;border:1px solid rgba(0,201,167,.3);padding:14px;
+}
+.dd-title{font-family:var(--head);font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px}
+.dd-route{
+  font-family:var(--mono);font-size:11px;color:var(--txt);
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+}
+.dd-arrow{color:var(--teal)}
+.dd-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.dd-m{background:var(--panel2);border-radius:4px;padding:7px 8px;border:1px solid var(--border);text-align:center}
+.dd-mv{font-family:var(--mono);font-size:15px;color:var(--teal)}
+.dd-ml{font-size:9px;color:var(--txt2);margin-top:2px}
+.btn-launch{
+  width:100%;padding:10px;border-radius:5px;
+  background:var(--teal);color:#0B0F1A;font-size:12px;font-weight:700;
+  border:none;cursor:pointer;font-family:var(--head);letter-spacing:.5px;
+  transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-launch:hover{background:#00E6C0;transform:translateY(-1px)}
+.btn-launch.launched{background:var(--blue);color:#fff}
+.btn-launch.en-route{background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)}
+
+/* Generic helpers */
+.lbl{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--txt3);font-family:var(--head);font-weight:700;margin-bottom:4px}
+.divider{height:1px;background:var(--border);margin:10px 0}
+.tag{font-size:9px;font-family:var(--mono);padding:2px 6px;border-radius:2px;display:inline-block}
+.tag-fhir{background:rgba(45,127,249,.15);color:var(--blue);border:1px solid var(--blue-dim)}
+.tag-iso{background:rgba(0,201,167,.1);color:var(--teal);border:1px solid var(--teal-dim)}
+.tag-who{background:rgba(139,92,246,.15);color:var(--purple);border:1px solid rgba(139,92,246,.3)}
+
+.scroll-y{overflow-y:auto}
+.scroll-y::-webkit-scrollbar{width:3px}
+.scroll-y::-webkit-scrollbar-thumb{background:var(--border2)}
+
+/* Notification toast */
+.toast{
+  position:fixed;top:64px;right:16px;z-index:999;
+  background:var(--panel);border:1px solid var(--red);border-radius:6px;
+  padding:12px 14px;max-width:280px;
+  transform:translateX(320px);transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+}
+.toast.show{transform:translateX(0);pointer-events:all}
+.toast-head{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.toast-icon{color:var(--red);font-size:14px}
+.toast-title{font-size:12px;font-weight:700;color:var(--txt)}
+.toast-body{font-size:11px;color:var(--txt2);line-height:1.4}
+.toast-actions{display:flex;gap:6px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">⬡ HealthV <span>PILOT v1.0</span></div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('hah',this)">
+      <span class="tab-dot dot-blue"></span> Hospital at Home
+    </div>
+    <div class="tab teal" onclick="switchTab('lae',this)">
+      <span class="tab-dot dot-teal"></span> LAE Drone Ops
+    </div>
+    <div class="tab amber" onclick="switchTab('pm',this)">
+      <span class="tab-dot dot-amber"></span> Predictive Maintenance
+    </div>
+    <div class="tab red" onclick="switchTab('emergency',this)">
+      <span class="tab-dot dot-red"></span> Emergency Dispatch
+    </div>
+  </div>
+  <div class="top-right">
+    <div class="badge">2 ALERT ĐỎ</div>
+    <div class="time-chip" id="clock">--:--:--</div>
+    <div class="user-chip">BS</div>
+  </div>
+</div>
+
+<!-- ═══ PANEL: Hospital at Home ═══ -->
+<div class="main">
+<div id="panel-hah" class="panel-view active">
+  <!-- Left: patient list -->
+  <div class="hah-left">
+    <div class="section-head">
+      Bệnh Nhân HaH <span class="count">12 đang theo dõi</span>
+    </div>
+    <div class="patient-list">
+      <div class="pt-card alert-red selected" onclick="selectPatient(this,0)">
+        <div class="alert-badge ab-red">🔴 RED</div>
+        <div class="pt-name">Nguyễn Văn Minh</div>
+        <div class="pt-meta">Nam · 67t · Suy tim NYHA II</div>
+        <div class="pt-vitals">
+          <span class="vital-chip danger">SpO₂ 87%</span>
+          <span class="vital-chip warn">HA 168/102</span>
+          <span class="vital-chip warn">+2.3kg</span>
+        </div>
+      </div>
+      <div class="pt-card alert-red" onclick="selectPatient(this,1)">
+        <div class="alert-badge ab-red">🔴 RED</div>
+        <div class="pt-name">Trần Thị Hoa</div>
+        <div class="pt-meta">Nữ · 54t · NMCT hậu can thiệp</div>
+        <div class="pt-vitals">
+          <span class="vital-chip danger">HR 128</span>
+          <span class="vital-chip warn">HA 155/98</span>
+          <span class="vital-chip ok">SpO₂ 94%</span>
+        </div>
+      </div>
+      <div class="pt-card alert-yellow" onclick="selectPatient(this,2)">
+        <div class="alert-badge ab-yellow">🟡 YELLOW</div>
+        <div class="pt-name">Lê Văn Đức</div>
+        <div class="pt-meta">Nam · 72t · THA mạn tính</div>
+        <div class="pt-vitals">
+          <span class="vital-chip warn">HA 152/94</span>
+          <span class="vital-chip ok">SpO₂ 97%</span>
+          <span class="vital-chip ok">HR 78</span>
+        </div>
+      </div>
+      <div class="pt-card alert-green" onclick="selectPatient(this,3)">
+        <div class="alert-badge ab-green">🟢 ĐẠT</div>
+        <div class="pt-name">Phạm Thị Lan</div>
+        <div class="pt-meta">Nữ · 61t · ĐTĐ type 2</div>
+        <div class="pt-vitals">
+          <span class="vital-chip ok">Glu 7.2</span>
+          <span class="vital-chip ok">HA 128/82</span>
+          <span class="vital-chip ok">SpO₂ 98%</span>
+        </div>
+      </div>
+      <div class="pt-card alert-green" onclick="selectPatient(this,4)">
+        <div class="alert-badge ab-green">🟢 ĐẠT</div>
+        <div class="pt-name">Hoàng Minh Tuấn</div>
+        <div class="pt-meta">Nam · 58t · THA + ĐTĐ</div>
+        <div class="pt-vitals">
+          <span class="vital-chip ok">HA 132/84</span>
+          <span class="vital-chip ok">Glu 6.8</span>
+          <span class="vital-chip ok">HR 72</span>
+        </div>
+      </div>
+      <div class="pt-card alert-yellow" onclick="selectPatient(this,5)">
+        <div class="alert-badge ab-yellow">🟡 YELLOW</div>
+        <div class="pt-name">Vũ Thị Mai</div>
+        <div class="pt-meta">Nữ · 65t · Suy thận CKD III</div>
+        <div class="pt-vitals">
+          <span class="vital-chip warn">Creatinine ↑</span>
+          <span class="vital-chip ok">HA 138/86</span>
+          <span class="vital-chip ok">SpO₂ 96%</span>
+        </div>
+      </div>
+    </div>
+    <div class="drone-cta">
+      <div class="drone-cta-title">⬡ Kích hoạt Drone LAE</div>
+      <div class="drone-cta-body">Nguyễn Văn Minh cần Furosemide 40mg khẩn. Drone BV Bạch Mai → Địa chỉ BN sẵn sàng.</div>
+      <button class="btn-sm btn-teal" onclick="launchFromHaH()">🚁 Điều phối Drone</button>
+    </div>
+  </div>
+
+  <!-- Center: vital chart -->
+  <div class="hah-center">
+    <div class="chart-header">
+      <div>
+        <div class="chart-patient-name" id="ptName">Nguyễn Văn Minh</div>
+        <div class="chart-meta" id="ptMeta">Nam · 67 tuổi · Suy tim NYHA II · Gói Premium Plus · BV Bạch Mai</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <span class="tag tag-fhir">FHIR R4</span>
+        <span class="tag tag-iso">NEWS2 Score: 6</span>
+        <span class="tag tag-who">WHO Alert</span>
+      </div>
+    </div>
+    <div class="vital-tabs">
+      <div class="vt active" onclick="setVitalTab(this,'bp')">Huyết áp</div>
+      <div class="vt" onclick="setVitalTab(this,'spo2')">SpO₂</div>
+      <div class="vt" onclick="setVitalTab(this,'hr')">Nhịp tim</div>
+      <div class="vt" onclick="setVitalTab(this,'weight')">Cân nặng</div>
+      <div class="vt" onclick="setVitalTab(this,'glucose')">Glucose</div>
+    </div>
+    <div class="chart-area">
+      <svg id="mainChart" class="sparkline" style="width:100%;height:100%"></svg>
+    </div>
+  </div>
+
+  <!-- Right: alerts -->
+  <div class="hah-right">
+    <div class="section-head">
+      Cảnh Báo Lâm Sàng <span class="count">4 chưa xử lý</span>
+    </div>
+    <div class="alert-feed">
+      <div class="alert-item red">
+        <div class="alert-time">Hôm nay · 06:15</div>
+        <div class="alert-msg"><strong>SpO₂ 87%</strong> — Nguyễn Văn Minh. Giảm liên tục 3 ngày. +2.3kg/ngày. Nguy cơ mất bù suy tim cao.</div>
+        <div class="alert-action">
+          <button class="btn-sm btn-red">🔴 Xử lý</button>
+          <button class="btn-sm btn-teal" onclick="switchTab('lae',document.querySelectorAll('.tab')[1])">⬡ Drone</button>
+        </div>
+      </div>
+      <div class="alert-item red">
+        <div class="alert-time">Hôm nay · 05:48</div>
+        <div class="alert-msg"><strong>HR 128 bpm</strong> — Trần Thị Hoa. AF có thể xảy ra. ECG patch 7 ngày đến hạn đọc.</div>
+        <div class="alert-action">
+          <button class="btn-sm btn-red">🔴 Xử lý</button>
+          <button class="btn-sm btn-blue">📋 Kê lệnh</button>
+        </div>
+      </div>
+      <div class="alert-item yellow">
+        <div class="alert-time">Hôm nay · 04:30</div>
+        <div class="alert-msg"><strong>HA 152/94</strong> — Lê Văn Đức. Trên ngưỡng 3 lần liên tiếp. Xem xét điều chỉnh Amlodipine.</div>
+        <div class="alert-action">
+          <button class="btn-sm btn-amber">🟡 Theo dõi</button>
+          <button class="btn-sm btn-blue">💊 Kê đơn</button>
+        </div>
+      </div>
+      <div class="alert-item yellow">
+        <div class="alert-time">Hôm qua · 22:10</div>
+        <div class="alert-msg"><strong>Thiết bị offline 6h</strong> — Vũ Thị Mai. Máy đo HA Bluetooth mất kết nối. PM đã cảnh báo pin yếu.</div>
+        <div class="alert-action">
+          <button class="btn-sm btn-amber">🔧 PM Alert</button>
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px;border-top:1px solid var(--border)">
+      <div class="lbl">FHIR Resources</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+        <span class="tag tag-fhir">Observation</span>
+        <span class="tag tag-fhir">RiskAssessment</span>
+        <span class="tag tag-fhir">MedicationRequest</span>
+        <span class="tag tag-fhir">Flag</span>
+        <span class="tag tag-fhir">CarePlan</span>
+        <span class="tag tag-fhir">AuditEvent</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL: LAE Flight Ops ═══ -->
+<div id="panel-lae" class="panel-view">
+  <div class="lae-top">
+    <!-- Map -->
+    <div class="lae-map">
+      <div class="map-bg"></div>
+      <!-- Flight path SVG -->
+      <svg class="map-svg" id="flightSvg"></svg>
+
+      <!-- Hospital markers -->
+      <div class="hosp-marker" style="left:28%;top:32%" id="hm-bachmai">
+        <div class="hosp-dot" style="background:rgba(45,127,249,.2);border-color:var(--blue);color:var(--blue)">BM</div>
+        <div class="hosp-label">BV Bạch Mai</div>
+      </div>
+      <div class="hosp-marker" style="left:52%;top:22%" id="hm-viet-duc">
+        <div class="hosp-dot" style="background:rgba(0,201,167,.15);border-color:var(--teal);color:var(--teal)">VĐ</div>
+        <div class="hosp-label">BV Việt Đức</div>
+      </div>
+      <div class="hosp-marker" style="left:68%;top:44%" id="hm-108">
+        <div class="hosp-dot" style="background:rgba(139,92,246,.15);border-color:var(--purple);color:var(--purple)">108</div>
+        <div class="hosp-label">BV 108</div>
+      </div>
+      <div class="hosp-marker" style="left:38%;top:58%" id="hm-pk1">
+        <div class="hosp-dot" style="background:rgba(245,158,11,.15);border-color:var(--amber);color:var(--amber)">PK</div>
+        <div class="hosp-label">PK Tâm Anh</div>
+      </div>
+      <!-- Patient location markers -->
+      <div class="hosp-marker" style="left:20%;top:46%" id="pt-loc-1">
+        <div class="hosp-dot" style="background:rgba(239,68,68,.2);border-color:var(--red);color:var(--red);animation:pulse-dot .8s infinite">BN</div>
+        <div class="hosp-label" style="color:var(--red)">Nguyễn V. Minh</div>
+      </div>
+      <div class="hosp-marker" style="left:72%;top:62%" id="pt-loc-2">
+        <div class="hosp-dot" style="background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red)">BN</div>
+        <div class="hosp-label" style="color:var(--red)">Trần T. Hoa</div>
+      </div>
+
+      <!-- Drone icon -->
+      <div class="drone-icon" id="droneIcon" style="left:28%;top:32%">
+        <svg width="28" height="28" viewBox="0 0 28 28" class="drone-svg">
+          <circle cx="14" cy="14" r="13" fill="rgba(0,201,167,.15)" stroke="var(--teal)" stroke-width="1"/>
+          <circle cx="14" cy="14" r="4" fill="var(--teal)"/>
+          <!-- rotors -->
+          <ellipse cx="6" cy="6" rx="4" ry="1.5" fill="none" stroke="var(--teal)" stroke-width="1" opacity=".7" style="animation:spin 0.2s linear infinite;transform-origin:6px 6px"/>
+          <ellipse cx="22" cy="6" rx="4" ry="1.5" fill="none" stroke="var(--teal)" stroke-width="1" opacity=".7" style="animation:spin 0.2s linear infinite reverse;transform-origin:22px 6px"/>
+          <ellipse cx="6" cy="22" rx="4" ry="1.5" fill="none" stroke="var(--teal)" stroke-width="1" opacity=".7" style="animation:spin 0.2s linear infinite;transform-origin:6px 22px"/>
+          <ellipse cx="22" cy="22" rx="4" ry="1.5" fill="none" stroke="var(--teal)" stroke-width="1" opacity=".7" style="animation:spin 0.2s linear infinite reverse;transform-origin:22px 22px"/>
+          <line x1="6" y1="6" x2="14" y2="14" stroke="var(--teal)" stroke-width="1" opacity=".4"/>
+          <line x1="22" y1="6" x2="14" y2="14" stroke="var(--teal)" stroke-width="1" opacity=".4"/>
+          <line x1="6" y1="22" x2="14" y2="14" stroke="var(--teal)" stroke-width="1" opacity=".4"/>
+          <line x1="22" y1="22" x2="14" y2="14" stroke="var(--teal)" stroke-width="1" opacity=".4"/>
+        </svg>
+      </div>
+
+      <!-- Status bar -->
+      <div class="flight-status-bar" id="flightStatusBar">
+        <div class="fstat-item">🚁 <span class="val" id="fsDrone">DRONE-01</span></div>
+        <div class="fstat-divider"></div>
+        <div class="fstat-item">Trạng thái: <span class="val" id="fsStatus">SẴN SÀNG</span></div>
+        <div class="fstat-divider"></div>
+        <div class="fstat-item">ETA: <span class="val" id="fsEta">—</span></div>
+        <div class="fstat-divider"></div>
+        <div class="fstat-item">Khoảng cách: <span class="val" id="fsDist">—</span></div>
+        <div class="fstat-divider"></div>
+        <div class="fstat-item">Pin: <span class="val" id="fsBat">94%</span></div>
+      </div>
+    </div>
+
+    <!-- Mission list sidebar -->
+    <div class="lae-sidebar">
+      <div class="section-head">Hàng Đợi Nhiệm Vụ <span class="count">4</span></div>
+      <div class="mission-list">
+        <div class="mission-card active" onclick="selectMission(this,0)">
+          <div><span class="mission-priority mp-stat">🚨 KHẨN CẤP</span></div>
+          <div class="mission-title">Furosemide 40mg × 2</div>
+          <div class="mission-route">BV Bạch Mai → Nguyễn V. Minh</div>
+          <div class="mission-route" style="margin-top:2px">Đống Đa · 5.8 km</div>
+          <div class="mission-eta">ETA: 11 phút</div>
+          <div class="prog-bar"><div class="prog-fill" id="mission0-prog" style="width:0%"></div></div>
+        </div>
+        <div class="mission-card" onclick="selectMission(this,1)">
+          <div><span class="mission-priority mp-stat">🚨 KHẨN CẤP</span></div>
+          <div class="mission-title">Kit BNP POC + IV Set</div>
+          <div class="mission-route">BV 108 → Trần T. Hoa</div>
+          <div class="mission-route" style="margin-top:2px">Cầu Giấy · 8.2 km</div>
+          <div class="mission-eta">ETA: 16 phút (chờ)</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:0%;background:var(--amber)"></div></div>
+        </div>
+        <div class="mission-card" onclick="selectMission(this,2)">
+          <div><span class="mission-priority mp-urg">⚠️ ƯU TIÊN</span></div>
+          <div class="mission-title">Mẫu bệnh phẩm × 3</div>
+          <div class="mission-route">PK Tâm Anh → Lab TW</div>
+          <div class="mission-route" style="margin-top:2px">Nội viện · 1.2 km</div>
+          <div class="mission-eta">ETA: 4 phút</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:65%;background:var(--amber)"></div></div>
+        </div>
+        <div class="mission-card" onclick="selectMission(this,3)">
+          <div><span class="mission-priority mp-rou">📦 THƯỜNG QUY</span></div>
+          <div class="mission-title">Thuốc mạn tính định kỳ</div>
+          <div class="mission-route">Nhà thuốc → Lê Văn Đức</div>
+          <div class="mission-route" style="margin-top:2px">Hoàng Mai · 3.5 km</div>
+          <div class="mission-eta">Lịch: 14:30</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:0%;background:var(--blue)"></div></div>
+        </div>
+      </div>
+      <div style="padding:10px;border-top:1px solid var(--border)">
+        <button class="btn-launch" id="launchBtn" onclick="toggleLaunch()">
+          🚁 PHÁT LỆNH BAY
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom: telemetry -->
+  <div class="lae-bottom">
+    <div class="telem-panel">
+      <div class="telem-title">Telemetry Real-time</div>
+      <div class="telem-grid">
+        <div class="telem-item">
+          <div class="telem-val" id="tAlt">0</div>
+          <div class="telem-unit">mét AGL</div>
+          <div class="telem-lbl">Độ cao</div>
+        </div>
+        <div class="telem-item">
+          <div class="telem-val" id="tSpd">0</div>
+          <div class="telem-unit">km/h</div>
+          <div class="telem-lbl">Tốc độ</div>
+        </div>
+        <div class="telem-item">
+          <div class="telem-val" id="tTemp">4.2</div>
+          <div class="telem-unit">°C (payload)</div>
+          <div class="telem-lbl">Nhiệt độ</div>
+        </div>
+        <div class="telem-item">
+          <div class="telem-val" id="tBat">94</div>
+          <div class="telem-unit">% · ~28 phút</div>
+          <div class="telem-lbl">Pin drone</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="payload-panel">
+      <div class="telem-title">Payload & Chain-of-Custody</div>
+      <div style="margin-top:6px">
+        <div class="alert-item" style="margin-bottom:6px;background:rgba(0,201,167,.05);border-color:rgba(0,201,167,.2)">
+          <div class="alert-time">FHIR MedicationRequest</div>
+          <div class="alert-msg"><strong>Furosemide 40mg × 2 viên</strong></div>
+          <div class="alert-msg">Bảo quản: nhiệt độ phòng</div>
+          <div class="alert-msg" style="margin-top:4px">Kê bởi: BS. Nguyễn Thu Hà</div>
+        </div>
+        <div class="fhir-entry">
+          <span class="fhir-key">"resourceType"</span>: <span class="fhir-str">"MedicationRequest"</span><br>
+          <span class="fhir-key">"priority"</span>: <span class="fhir-str">"urgent"</span><br>
+          <span class="fhir-key">"status"</span>: <span class="fhir-val">in-progress</span><br>
+          <span class="fhir-key">"deliveryMode"</span>: <span class="fhir-str">"LAE-drone"</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="fhir-panel">
+      <div class="telem-title">FHIR Event Log</div>
+      <div id="fhirLog">
+        <div class="fhir-entry"><span class="fhir-key">06:15:22</span> RiskAssessment.prediction = <span class="fhir-val">0.84</span> → Flag.status = <span class="fhir-str">active</span></div>
+        <div class="fhir-entry"><span class="fhir-key">06:16:04</span> MedicationRequest created · priority = <span class="fhir-str">urgent</span> · requester = <span class="fhir-val">Dr.NguyenThuHa</span></div>
+        <div class="fhir-entry"><span class="fhir-key">06:16:08</span> ServiceRequest → LAE UTM dispatch · drone = <span class="fhir-val">DRONE-01</span></div>
+        <div class="fhir-entry"><span class="fhir-key">06:16:11</span> AuditEvent logged · action = <span class="fhir-str">CREATE</span> · outcome = <span class="fhir-val">success</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL: Predictive Maintenance ═══ -->
+<div id="panel-pm" class="panel-view">
+  <div class="pm-header">
+    <div class="pm-stat-card">
+      <div class="pm-stat-icon">🟢</div>
+      <div><div class="pm-stat-num" style="color:var(--green)">847</div><div class="pm-stat-lbl">Thiết bị hoạt động</div></div>
+    </div>
+    <div class="pm-stat-card">
+      <div class="pm-stat-icon">🟡</div>
+      <div><div class="pm-stat-num" style="color:var(--amber)">12</div><div class="pm-stat-lbl">Cần bảo trì 7–14 ngày</div></div>
+    </div>
+    <div class="pm-stat-card">
+      <div class="pm-stat-icon">🔴</div>
+      <div><div class="pm-stat-num" style="color:var(--red)">3</div><div class="pm-stat-lbl">Hỏng hóc sắp xảy ra</div></div>
+    </div>
+    <div class="pm-stat-card">
+      <div class="pm-stat-icon">📊</div>
+      <div><div class="pm-stat-num" style="color:var(--teal)">96.4%</div><div class="pm-stat-lbl">Uptime tháng này</div></div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <span class="tag tag-iso">ISO 55001</span>
+      <span class="tag tag-fhir">FHIR Device</span>
+      <span class="tag tag-who">JCI AMS.4</span>
+    </div>
+  </div>
+  <div class="pm-body">
+    <div class="pm-list">
+      <div class="lbl" style="padding:4px 2px 8px">Thiết bị y tế — BV Bạch Mai</div>
+      <div class="device-card critical selected" onclick="selectDevice(this,0)">
+        <div class="dev-top">
+          <div><div class="dev-name">Máy thở Drager Evita 600</div><div class="dev-type">VENTILATOR · ICU-04 · SN: DRG-8847</div></div>
+          <span class="tag" style="background:var(--red-dim);color:var(--red);border:1px solid var(--red)">CRITICAL</span>
+        </div>
+        <div class="health-bar"><div class="hb-fill" style="width:18%;background:var(--red)"></div></div>
+        <div class="dev-metrics">
+          <span class="dev-metric" style="color:var(--red);border-color:rgba(239,68,68,.4)">Motor vibration ↑↑↑</span>
+          <span class="dev-metric" style="color:var(--amber)">Tuổi: 4.2 năm</span>
+          <span class="dev-metric">Dự báo hỏng: 3–5 ngày</span>
+        </div>
+      </div>
+      <div class="device-card warning" onclick="selectDevice(this,1)">
+        <div class="dev-top">
+          <div><div class="dev-name">Máy siêu âm Philips EPIQ</div><div class="dev-type">ULTRASOUND · Phòng Siêu âm 2 · SN: PHI-3321</div></div>
+          <span class="tag" style="background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)">WARNING</span>
+        </div>
+        <div class="health-bar"><div class="hb-fill" style="width:52%;background:var(--amber)"></div></div>
+        <div class="dev-metrics">
+          <span class="dev-metric" style="color:var(--amber)">Transducer wear 62%</span>
+          <span class="dev-metric">Lần bảo trì cuối: 187 ngày</span>
+          <span class="dev-metric">Dự báo: 14 ngày</span>
+        </div>
+      </div>
+      <div class="device-card warning" onclick="selectDevice(this,2)">
+        <div class="dev-top">
+          <div><div class="dev-name">Monitor theo dõi BN Mindray</div><div class="dev-type">PATIENT MONITOR · Tim mạch A3 · SN: MR-7762</div></div>
+          <span class="tag" style="background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)">WARNING</span>
+        </div>
+        <div class="health-bar"><div class="hb-fill" style="width:45%;background:var(--amber)"></div></div>
+        <div class="dev-metrics">
+          <span class="dev-metric" style="color:var(--amber)">SpO₂ sensor drift</span>
+          <span class="dev-metric">ECG lead noise</span>
+          <span class="dev-metric">Dự báo: 10 ngày</span>
+        </div>
+      </div>
+      <div class="device-card good" onclick="selectDevice(this,3)">
+        <div class="dev-top">
+          <div><div class="dev-name">Máy X-quang Siemens Ysio</div><div class="dev-type">X-RAY · Khoa CĐHA · SN: SIE-0019</div></div>
+          <span class="tag" style="background:var(--green-dim);color:var(--green);border:1px solid var(--green)">TỐT</span>
+        </div>
+        <div class="health-bar"><div class="hb-fill" style="width:88%;background:var(--green)"></div></div>
+        <div class="dev-metrics">
+          <span class="dev-metric" style="color:var(--green)">Tube life: 88%</span>
+          <span class="dev-metric">Uptime 30 ngày: 99.1%</span>
+          <span class="dev-metric">Bảo trì: 62 ngày nữa</span>
+        </div>
+      </div>
+      <div class="device-card good" onclick="selectDevice(this,4)">
+        <div class="dev-top">
+          <div><div class="dev-name">Hệ thống xét nghiệm Roche cobas</div><div class="dev-type">ANALYZER · Khoa Xét nghiệm · SN: RC-5541</div></div>
+          <span class="tag" style="background:var(--green-dim);color:var(--green);border:1px solid var(--green)">TỐT</span>
+        </div>
+        <div class="health-bar"><div class="hb-fill" style="width:91%;background:var(--green)"></div></div>
+        <div class="dev-metrics">
+          <span class="dev-metric" style="color:var(--green)">Reagent: 81%</span>
+          <span class="dev-metric">QC passed hôm nay</span>
+          <span class="dev-metric">ISO 15189 compliant</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pm-detail scroll-y">
+      <div class="lbl" style="margin-bottom:10px">Máy thở Drager Evita 600 — Phân tích AI</div>
+      <div class="detail-chart">
+        <div class="lbl" style="position:absolute;top:10px;left:14px">Chỉ số motor vibration — 30 ngày</div>
+        <svg id="pmChart" style="width:100%;height:100%;margin-top:20px;"></svg>
+      </div>
+      <div class="maintenance-timeline">
+        <div class="lbl" style="margin-bottom:8px">Lịch sử & Lịch bảo trì AI đề xuất</div>
+        <div class="timeline-item">
+          <div class="tl-dot" style="background:var(--green)"></div>
+          <div class="tl-content">
+            <div class="tl-title">Bảo trì định kỳ hoàn thành</div>
+            <div class="tl-meta">Kỹ thuật viên: Trần Văn Hùng · 187 ngày trước</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot" style="background:var(--amber)"></div>
+          <div class="tl-content">
+            <div class="tl-title">AI phát hiện vibration tăng bất thường</div>
+            <div class="tl-meta">Alert tự động · 12 ngày trước · FHIR DeviceMetric alert</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot" style="background:var(--red);animation:pulse-dot 1s infinite"></div>
+          <div class="tl-content">
+            <div class="tl-title" style="color:var(--red)">⚠️ BẢO TRÌ KHẨN — Thay motor blower</div>
+            <div class="tl-meta">AI dự báo: hỏng trong 3–5 ngày · Tin cậy 91% · XÉT ĐẶT LỊCH NGAY</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-dot" style="background:var(--txt3)"></div>
+          <div class="tl-content">
+            <div class="tl-title" style="color:var(--txt3)">Bảo trì định kỳ tiếp theo (đề xuất)</div>
+            <div class="tl-meta">Sau khi thay motor · ISO 55001 schedule · +180 ngày</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-sm btn-red" style="flex:1;padding:8px">⚡ Đặt lịch khẩn hôm nay</button>
+        <button class="btn-sm btn-blue" style="flex:1;padding:8px">📄 Báo cáo JCI</button>
+        <button class="btn-sm btn-teal" style="flex:1;padding:8px">⬡ Drone linh kiện</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PANEL: Emergency Dispatch ═══ -->
+<div id="panel-emergency" class="panel-view">
+  <div class="emg-header">
+    <div class="emg-title">⚡ TRUNG TÂM ĐIỀU PHỐI CẤP CỨU — DRONE FIRST RESPONDER</div>
+    <div class="emg-live">LIVE</div>
+    <div style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--txt2)">
+      2 ca đang xử lý · 1 drone en-route · Golden Hour Monitor
+    </div>
+  </div>
+  <div class="emg-body">
+    <div class="emg-feed">
+      <div class="emg-card active" onclick="selectEmg(this,0)">
+        <div class="emg-type et-cardiac">⚡ NMCT — GOLDEN HOUR</div>
+        <div class="emg-patient">Nam, 62t — Nguyễn Văn Bình</div>
+        <div class="emg-location">📍 Huyện Bình Phước · 12km từ hub drone</div>
+        <div class="emg-timeline-bar">
+          <div class="timeline-track"><div class="timeline-progress" id="golden-prog" style="width:28%;background:var(--green)"></div></div>
+          <div class="emg-status" style="color:var(--green)" id="golden-time">12 phút</div>
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--txt2)">Cửa sổ PCI: còn 78 phút</div>
+      </div>
+      <div class="emg-card" onclick="selectEmg(this,1)">
+        <div class="emg-type et-stroke">🧠 ĐỘT QUỴ NÃO</div>
+        <div class="emg-patient">Nữ, 67t — Lê Thị Phương</div>
+        <div class="emg-location">📍 Quận Cầu Giấy · 4.5km BV Việt Đức</div>
+        <div class="emg-timeline-bar">
+          <div class="timeline-track"><div class="timeline-progress" style="width:55%;background:var(--amber)"></div></div>
+          <div class="emg-status" style="color:var(--amber)">Đang xử lý</div>
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--txt2)">Cửa sổ r-tPA: còn 210 phút</div>
+      </div>
+      <div class="emg-card resolved">
+        <div class="emg-type" style="color:var(--green)">✅ SỐC PHẢN VỆ — ĐÃ XỬ LÝ</div>
+        <div class="emg-patient">Nam, 34t — Phạm Văn Cường</div>
+        <div class="emg-location">📍 Quận Ba Đình · Drone giao epinephrine 7 phút</div>
+        <div style="margin-top:6px;font-size:10px;color:var(--green)">Ổn định · Xe CCC đang vận chuyển BV</div>
+      </div>
+      <div class="emg-card" onclick="selectEmg(this,3)">
+        <div class="emg-type et-supply">📦 MÁU KHẨN CẤP</div>
+        <div class="emg-patient">BV Huyện Đông Anh — O- shortage</div>
+        <div class="emg-location">📍 Đông Anh · 22km · Trung tâm Truyền máu</div>
+        <div class="emg-timeline-bar">
+          <div class="timeline-track"><div class="timeline-progress" style="width:0%;background:var(--blue)"></div></div>
+          <div class="emg-status" style="color:var(--txt2)">Chờ phê duyệt</div>
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--txt2)">2 đơn vị · 2–6°C bảo ôn · Drone cold-chain</div>
+      </div>
+    </div>
+
+    <div class="emg-detail">
+      <!-- Chain of response -->
+      <div class="emg-chain">
+        <div class="chain-title">
+          ⚡ Chuỗi phản ứng tích hợp — NMCT Nguyễn Văn Bình
+          <span class="tag" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid var(--red-dim)">Golden Hour: 78 phút còn lại</span>
+        </div>
+        <div class="chain-step">
+          <div class="chain-num cn-done">✓</div>
+          <div class="chain-content">
+            <div class="chain-action">HaH Alert kích hoạt — SpO₂ + HR đột biến</div>
+            <div class="chain-detail">Smart watch ghi nhận HR 138 bpm · ST elevation pattern → FHIR RiskAssessment 0.91 → Flag RED</div>
+            <div class="chain-time">14:08 · T+0 phút</div>
+          </div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-num cn-done">✓</div>
+          <div class="chain-content">
+            <div class="chain-action">AI phân tầng RED + Bác sĩ HaH xác nhận</div>
+            <div class="chain-detail">Bác sĩ BS. Trần Minh Khoa review 2 phút → confirm STEMI protocol → FHIR ServiceRequest urgent</div>
+            <div class="chain-time">14:10 · T+2 phút</div>
+          </div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-num cn-done">✓</div>
+          <div class="chain-content">
+            <div class="chain-action">Drone DRONE-02 cất cánh từ Hub Bình Phước</div>
+            <div class="chain-detail">Payload: Aspirin 300mg · Clopidogrel 600mg · Heparin · Kit ECG 12 chuyển đạo POC · Nitroglycerin sublingual</div>
+            <div class="chain-time">14:10:45 · T+2:45 phút</div>
+          </div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-num cn-active">▶</div>
+          <div class="chain-content">
+            <div class="chain-action" style="color:var(--blue)">Drone EN-ROUTE · 12km · ETA 8 phút còn lại</div>
+            <div class="chain-detail">Tốc độ 95 km/h · Độ cao 120m · Nhiệt độ payload OK · GPS lock</div>
+            <div class="chain-time">14:12 · Đang bay → T+4 phút</div>
+          </div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-num cn-pending">5</div>
+          <div class="chain-content">
+            <div class="chain-action" style="color:var(--txt3)">Drone hạ cánh · Nhân viên y tế xã tiếp nhận · Sơ cứu STEMI protocol</div>
+            <div class="chain-detail">ECG 12 chuyển đạo → gửi số hóa về BS tim mạch BV tỉnh xác nhận từ xa trong 3 phút</div>
+            <div class="chain-time">Dự kiến 14:20 · T+12 phút</div>
+          </div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-num cn-pending">6</div>
+          <div class="chain-content">
+            <div class="chain-action" style="color:var(--txt3)">Xe cứu thương đến · Vận chuyển BV có Cath Lab</div>
+            <div class="chain-detail">Pre-cath lab preparation đã sẵn sàng (BV đã nhận thông báo) · Dự kiến Door-to-balloon: 35 phút</div>
+            <div class="chain-time">Dự kiến 14:30 · T+22 phút</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vitals -->
+      <div class="vitals-panel">
+        <div class="lbl">Sinh hiệu BN — Thời gian thực (từ smart watch)</div>
+        <div class="vitals-grid">
+          <div class="vital-box">
+            <div class="vital-v critical" id="emgHR">138</div>
+            <div class="vital-u">bpm</div>
+            <div class="vital-n">Nhịp tim</div>
+          </div>
+          <div class="vital-box">
+            <div class="vital-v warn">162/98</div>
+            <div class="vital-u">mmHg</div>
+            <div class="vital-n">Huyết áp</div>
+          </div>
+          <div class="vital-box">
+            <div class="vital-v warn" id="emgSpo2">91</div>
+            <div class="vital-u">%</div>
+            <div class="vital-n">SpO₂</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drone deploy -->
+      <div class="drone-deploy">
+        <div class="dd-title">⬡ DRONE-02 — En Route</div>
+        <div class="dd-route">
+          <span>Hub Bình Phước</span>
+          <span class="dd-arrow">→→→</span>
+          <span style="color:var(--red)">BN Nguyễn Văn Bình</span>
+        </div>
+        <div class="dd-metrics">
+          <div class="dd-m"><div class="dd-mv" id="emgEta">8</div><div class="dd-ml">phút ETA</div></div>
+          <div class="dd-m"><div class="dd-mv">12</div><div class="dd-ml">km</div></div>
+          <div class="dd-m"><div class="dd-mv">87%</div><div class="dd-ml">pin</div></div>
+        </div>
+        <button class="btn-launch en-route" disabled>🚁 ĐANG BAY — EN ROUTE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+</div><!-- end app -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-head">
+    <span class="toast-icon">🚨</span>
+    <span class="toast-title" id="toastTitle">Alert mới</span>
+  </div>
+  <div class="toast-body" id="toastBody">...</div>
+  <div class="toast-actions">
+    <button class="btn-sm btn-teal" onclick="switchTab('lae',document.querySelectorAll('.tab')[1]);hideToast()">⬡ Điều phối Drone</button>
+    <button class="btn-sm btn-blue" onclick="hideToast()">Đóng</button>
+  </div>
+</div>
+
+<style>
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+
+<script>
+// ── Clock ──────────────────────────────────────────────
+function updateClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock,1000); updateClock();
+
+// ── Tab switching ──────────────────────────────────────
+function switchTab(name, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel-view').forEach(p=>{p.classList.remove('active');p.style.display='none'});
+  el.classList.add('active');
+  const panel = document.getElementById('panel-'+name);
+  panel.style.display='flex';
+  requestAnimationFrame(()=>panel.classList.add('active'));
+  if(name==='lae') initMap();
+  if(name==='pm') drawPMChart();
+}
+
+// ── Patient data ───────────────────────────────────────
+const patients = [
+  {name:'Nguyễn Văn Minh', meta:'Nam · 67 tuổi · Suy tim NYHA II · Gói Premium Plus · BV Bạch Mai'},
+  {name:'Trần Thị Hoa', meta:'Nữ · 54 tuổi · NMCT hậu can thiệp · Gói Premium Plus · BV 108'},
+  {name:'Lê Văn Đức', meta:'Nam · 72 tuổi · THA mạn tính · Gói Basic · BV Tâm Anh'},
+  {name:'Phạm Thị Lan', meta:'Nữ · 61 tuổi · ĐTĐ type 2 · Gói Comprehensive · BV Bạch Mai'},
+  {name:'Hoàng Minh Tuấn', meta:'Nam · 58 tuổi · THA + ĐTĐ · Gói Basic · PK Quận 1'},
+  {name:'Vũ Thị Mai', meta:'Nữ · 65 tuổi · Suy thận CKD III · Gói Comprehensive · BV 108'},
+];
+
+function selectPatient(el, idx){
+  document.querySelectorAll('.pt-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('ptName').textContent = patients[idx].name;
+  document.getElementById('ptMeta').textContent = patients[idx].meta;
+  drawMainChart(currentVital);
+}
+
+// ── Vital charts ───────────────────────────────────────
+let currentVital = 'bp';
+function setVitalTab(el, vital){
+  document.querySelectorAll('.vt').forEach(v=>v.classList.remove('active'));
+  el.classList.add('active');
+  currentVital = vital;
+  drawMainChart(vital);
+}
+
+function drawMainChart(vital){
+  const svg = document.getElementById('mainChart');
+  const W = svg.parentElement.clientWidth, H = svg.parentElement.clientHeight - 20;
+  if(!W||!H) return;
+  svg.innerHTML='';
+  const days = 30;
+  const labels = ['30d','25d','20d','15d','10d','5d','Hôm nay'];
+
+  const datasets = {
+    bp: {data:Array.from({length:days},(_,i)=>100+Math.sin(i*.4)*12+Math.random()*8+(i>22?15:0)),
+         data2:Array.from({length:days},(_,i)=>65+Math.sin(i*.4)*6+Math.random()*5+(i>22?10:0)),
+         label:'Huyết áp tâm thu',label2:'Huyết áp tâm trương',
+         color:'#EF4444',color2:'#F59E0B',unit:'mmHg',threshold:140,thLabel:'Ngưỡng 140'},
+    spo2:{data:Array.from({length:days},(_,i)=>97+Math.sin(i*.3)-.5+Math.random()-(i>24?4:0)),
+          label:'SpO₂',color:'#2D7FF9',unit:'%',threshold:95,thLabel:'Ngưỡng 95%'},
+    hr:  {data:Array.from({length:days},(_,i)=>72+Math.sin(i*.5)*6+Math.random()*4+(i>26?18:0)),
+          label:'Nhịp tim',color:'#10B981',unit:'bpm',threshold:100,thLabel:'Ngưỡng 100'},
+    weight:{data:Array.from({length:days},(_,i)=>68+i*.08+Math.random()*.3+(i>26?2.3:0)),
+            label:'Cân nặng',color:'#8B5CF6',unit:'kg',threshold:70.5,thLabel:'Tăng >2kg'},
+    glucose:{data:Array.from({length:days},(_,i)=>7.2+Math.sin(i*.6)*1.2+Math.random()*.5),
+             label:'Glucose',color:'#F59E0B',unit:'mmol/L',threshold:10,thLabel:'Ngưỡng 10'},
+  };
+
+  const ds = datasets[vital];
+  const allVals = [...ds.data, ...(ds.data2||[])];
+  const minV = Math.min(...allVals)*.98, maxV = Math.max(...allVals)*1.02;
+  const pad = {l:48,r:20,t:16,b:36};
+  const pw = W-pad.l-pad.r, ph = H-pad.t-pad.b;
+
+  const toX = i => pad.l + (i/(days-1))*pw;
+  const toY = v => pad.t + (1-(v-minV)/(maxV-minV))*ph;
+
+  // Grid
+  for(let g=0;g<=4;g++){
+    const y = pad.t + g*(ph/4);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',pad.l); line.setAttribute('x2',pad.l+pw);
+    line.setAttribute('y1',y); line.setAttribute('y2',y);
+    line.setAttribute('stroke','#1E2A42'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+    const tv = maxV - g*((maxV-minV)/4);
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',pad.l-4); txt.setAttribute('y',y+4);
+    txt.setAttribute('text-anchor','end'); txt.setAttribute('font-size','10');
+    txt.setAttribute('fill','#4A5568'); txt.setAttribute('font-family','DM Mono,monospace');
+    txt.textContent = tv.toFixed(1);
+    svg.appendChild(txt);
+  }
+
+  // Threshold line
+  if(ds.threshold){
+    const ty = toY(ds.threshold);
+    const thl = document.createElementNS('http://www.w3.org/2000/svg','line');
+    thl.setAttribute('x1',pad.l); thl.setAttribute('x2',pad.l+pw);
+    thl.setAttribute('y1',ty); thl.setAttribute('y2',ty);
+    thl.setAttribute('stroke','#EF4444'); thl.setAttribute('stroke-width','1');
+    thl.setAttribute('stroke-dasharray','4,3'); thl.setAttribute('opacity','.5');
+    svg.appendChild(thl);
+  }
+
+  // Area fill
+  function buildPath(data){
+    return data.map((v,i)=>`${i===0?'M':'L'}${toX(i)},${toY(v)}`).join(' ');
+  }
+  function buildArea(data){
+    const p = buildPath(data);
+    return `${p} L${toX(data.length-1)},${pad.t+ph} L${toX(0)},${pad.t+ph} Z`;
+  }
+
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  const grad = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+  grad.setAttribute('id','areaGrad'); grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+  grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+  const s1 = document.createElementNS('http://www.w3.org/2000/svg','stop');
+  s1.setAttribute('offset','0%'); s1.setAttribute('stop-color',ds.color); s1.setAttribute('stop-opacity','.25');
+  const s2 = document.createElementNS('http://www.w3.org/2000/svg','stop');
+  s2.setAttribute('offset','100%'); s2.setAttribute('stop-color',ds.color); s2.setAttribute('stop-opacity','.02');
+  grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
+
+  const area = document.createElementNS('http://www.w3.org/2000/svg','path');
+  area.setAttribute('d', buildArea(ds.data)); area.setAttribute('fill','url(#areaGrad)');
+  svg.appendChild(area);
+
+  if(ds.data2){
+    const a2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+    a2.setAttribute('d', buildArea(ds.data2)); a2.setAttribute('fill',`${ds.color2}18`);
+    svg.appendChild(a2);
+    const l2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+    l2.setAttribute('d', buildPath(ds.data2)); l2.setAttribute('fill','none');
+    l2.setAttribute('stroke',ds.color2); l2.setAttribute('stroke-width','1.5');
+    l2.setAttribute('stroke-dasharray','4,2');
+    svg.appendChild(l2);
+  }
+
+  const line2 = document.createElementNS('http://www.w3.org/2000/svg','path');
+  line2.setAttribute('d', buildPath(ds.data)); line2.setAttribute('fill','none');
+  line2.setAttribute('stroke',ds.color); line2.setAttribute('stroke-width','2');
+  line2.setAttribute('stroke-linecap','round');
+  svg.appendChild(line2);
+
+  // Dots at key points
+  [0, Math.floor(days/2), days-1].forEach(i=>{
+    const ci = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    ci.setAttribute('cx',toX(i)); ci.setAttribute('cy',toY(ds.data[i]));
+    ci.setAttribute('r','3'); ci.setAttribute('fill',ds.color);
+    svg.appendChild(ci);
+    const vt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    vt.setAttribute('x',toX(i)); vt.setAttribute('y',toY(ds.data[i])-7);
+    vt.setAttribute('text-anchor','middle'); vt.setAttribute('font-size','9');
+    vt.setAttribute('fill',ds.color); vt.setAttribute('font-family','DM Mono,monospace');
+    vt.textContent = ds.data[i].toFixed(1);
+    svg.appendChild(vt);
+  });
+
+  // X labels
+  labels.forEach((l,i)=>{
+    const xi = Math.round((i/6)*(days-1));
+    const xt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    xt.setAttribute('x',toX(xi)); xt.setAttribute('y',pad.t+ph+22);
+    xt.setAttribute('text-anchor','middle'); xt.setAttribute('font-size','10');
+    xt.setAttribute('fill','#4A5568'); xt.setAttribute('font-family','DM Mono,monospace');
+    xt.textContent = l;
+    svg.appendChild(xt);
+  });
+}
+
+// ── LAE Map ───────────────────────────────────────────
+let droneAnimating = false;
+let droneAnim = null;
+
+function initMap(){
+  drawFlightPath();
+}
+
+function drawFlightPath(){
+  const svg = document.getElementById('flightSvg');
+  svg.innerHTML='';
+  // Dashed path BV Bạch Mai → BN Minh
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  const mapEl = document.querySelector('.lae-map');
+  const W = mapEl.clientWidth, H = mapEl.clientHeight;
+  const x1=W*.28, y1=H*.32, x2=W*.20, y2=H*.46;
+  const cx=(x1+x2)/2, cy=Math.min(y1,y2)-.1*H;
+  const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
+  path.setAttribute('d',d);
+  path.setAttribute('fill','none');
+  path.setAttribute('stroke','rgba(0,201,167,0.4)');
+  path.setAttribute('stroke-width','2');
+  path.setAttribute('stroke-dasharray','8,4');
+  svg.appendChild(path);
+
+  // Distance label
+  const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+  txt.setAttribute('x',cx); txt.setAttribute('y',cy-10);
+  txt.setAttribute('text-anchor','middle'); txt.setAttribute('font-size','11');
+  txt.setAttribute('fill','rgba(0,201,167,0.7)'); txt.setAttribute('font-family','DM Mono,monospace');
+  txt.textContent='5.8km · 11 phút';
+  svg.appendChild(txt);
+}
+
+let launched = false;
+function toggleLaunch(){
+  if(launched) return;
+  launched = true;
+  const btn = document.getElementById('launchBtn');
+  btn.classList.add('launched');
+  btn.innerHTML = '✈️ DRONE-01 ĐANG BAY';
+  document.getElementById('fsStatus').textContent = 'EN-ROUTE';
+  document.getElementById('fsStatus').style.color = 'var(--amber)';
+  document.getElementById('fsEta').textContent = '11 phút';
+  document.getElementById('fsDist').textContent = '5.8 km';
+  animateDrone();
+  showToast('Drone-01 đã cất cánh','BV Bạch Mai → Nguyễn Văn Minh · ETA 11 phút · Furosemide 40mg × 2');
+  startTelemAnimation();
+
+  // animate progress
+  let p = 0;
+  const pi = setInterval(()=>{
+    p = Math.min(100, p+1.2);
+    document.getElementById('mission0-prog').style.width = p+'%';
+    if(p>=100){
+      clearInterval(pi);
+      document.getElementById('fsStatus').textContent = 'ĐÃ ĐẾN';
+      document.getElementById('fsStatus').style.color = 'var(--green)';
+      document.getElementById('fsEta').textContent = '0 phút';
+      btn.innerHTML = '✅ HOÀN THÀNH';
+      btn.style.background = 'var(--green-dim)';
+      btn.style.color = 'var(--green)';
+      addFhirLog('MedicationDispense confirmed · BN xác nhận nhận hàng · AuditEvent logged');
+      launched = false;
+    }
+  },80);
+}
+
+function animateDrone(){
+  const mapEl = document.querySelector('.lae-map');
+  const W = mapEl.clientWidth, H = mapEl.clientHeight;
+  const drone = document.getElementById('droneIcon');
+  const x1=W*.28,y1=H*.32,x2=W*.20,y2=H*.46;
+  const cx=(x1+x2)/2,cy=Math.min(y1,y2)-.1*H;
+  let t=0;
+  const step=()=>{
+    t=Math.min(1,t+.004);
+    const bx=Math.pow(1-t,2)*x1+2*(1-t)*t*cx+Math.pow(t,2)*x2;
+    const by=Math.pow(1-t,2)*y1+2*(1-t)*t*cy+Math.pow(t,2)*y2;
+    drone.style.left=bx+'px'; drone.style.top=by+'px';
+    const distLeft = ((1-t)*5.8).toFixed(1);
+    document.getElementById('fsDist').textContent=distLeft+' km';
+    const etaLeft = Math.ceil((1-t)*11);
+    document.getElementById('fsEta').textContent= etaLeft>0?etaLeft+' phút':'Đến nơi';
+    if(t<1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function startTelemAnimation(){
+  setInterval(()=>{
+    document.getElementById('tAlt').textContent = Math.round(100+Math.random()*30);
+    document.getElementById('tSpd').textContent = Math.round(85+Math.random()*20);
+    document.getElementById('tBat').textContent = Math.max(60,94-Math.floor(Math.random()*3));
+  },1200);
+}
+
+function addFhirLog(msg){
+  const log = document.getElementById('fhirLog');
+  const now = new Date();
+  const ts = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+  const entry = document.createElement('div');
+  entry.className='fhir-entry';
+  entry.innerHTML=`<span class="fhir-key">${ts}</span> <span class="fhir-val">${msg}</span>`;
+  log.insertBefore(entry,log.firstChild);
+}
+
+// ── PM Chart ──────────────────────────────────────────
+function drawPMChart(){
+  const svg = document.getElementById('pmChart');
+  if(!svg) return;
+  const W = svg.parentElement.clientWidth-28, H = 100;
+  svg.style.height=H+'px';
+  svg.innerHTML='';
+  const days=30;
+  const data = Array.from({length:days},(_,i)=>{
+    const base = 0.3 + i*0.022;
+    return base + Math.sin(i*.5)*.08+Math.random()*.05;
+  });
+  const maxV=Math.max(...data)*1.1, minV=0;
+  const pad={l:36,r:12,t:8,b:18};
+  const pw=W-pad.l-pad.r, ph=H-pad.t-pad.b;
+  const toX=i=>pad.l+(i/(days-1))*pw;
+  const toY=v=>pad.t+(1-(v-minV)/(maxV-minV))*ph;
+
+  // Threshold zone
+  const warn=0.65, crit=0.80;
+  const warnZone=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  warnZone.setAttribute('x',pad.l); warnZone.setAttribute('y',toY(crit));
+  warnZone.setAttribute('width',pw); warnZone.setAttribute('height',toY(warn)-toY(crit));
+  warnZone.setAttribute('fill','rgba(239,68,68,.08)');
+  svg.appendChild(warnZone);
+
+  // Line
+  const pts = data.map((v,i)=>`${i===0?'M':'L'}${toX(i)},${toY(v)}`).join(' ');
+  const line = document.createElementNS('http://www.w3.org/2000/svg','path');
+  line.setAttribute('d',pts); line.setAttribute('fill','none');
+  line.setAttribute('stroke','var(--red)'); line.setAttribute('stroke-width','2');
+  svg.appendChild(line);
+
+  // Critical dot
+  const lastV = data[days-1];
+  const cx=toX(days-1),cy=toY(lastV);
+  const ci=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  ci.setAttribute('cx',cx);ci.setAttribute('cy',cy);
+  ci.setAttribute('r','4'); ci.setAttribute('fill','var(--red)');
+  svg.appendChild(ci);
+
+  const lt=document.createElementNS('http://www.w3.org/2000/svg','text');
+  lt.setAttribute('x',cx+6);lt.setAttribute('y',cy+4);
+  lt.setAttribute('font-size','10');lt.setAttribute('fill','var(--red)');
+  lt.setAttribute('font-family','DM Mono,monospace');
+  lt.textContent=lastV.toFixed(2)+' g';
+  svg.appendChild(lt);
+
+  // Label
+  const lbl=document.createElementNS('http://www.w3.org/2000/svg','text');
+  lbl.setAttribute('x',pad.l+pw-2);lbl.setAttribute('y',pad.t+ph+14);
+  lbl.setAttribute('text-anchor','end');
+  lbl.setAttribute('font-size','9');lbl.setAttribute('fill','#4A5568');
+  lbl.setAttribute('font-family','DM Mono,monospace');
+  lbl.textContent='30 ngày gần nhất';
+  svg.appendChild(lbl);
+}
+
+// ── Misc interactions ─────────────────────────────────
+function selectMission(el,idx){ document.querySelectorAll('.mission-card').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
+function selectDevice(el,idx){ document.querySelectorAll('.device-card').forEach(c=>c.classList.remove('selected')); el.classList.add('selected'); }
+function selectEmg(el,idx){ document.querySelectorAll('.emg-card').forEach(c=>c.classList.remove('active')); el.classList.add('active'); }
+function launchFromHaH(){ switchTab('lae',document.querySelectorAll('.tab')[1]); setTimeout(()=>{ document.querySelector('.mission-card').click(); },300); }
+
+// ── Toast ─────────────────────────────────────────────
+function showToast(title,body){
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastBody').textContent=body;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>hideToast(),6000);
+}
+function hideToast(){ document.getElementById('toast').classList.remove('show'); }
+
+// ── Emergency timer ───────────────────────────────────
+let goldenSec = 78*60;
+setInterval(()=>{
+  goldenSec = Math.max(0, goldenSec-1);
+  const m=Math.floor(goldenSec/60), s=goldenSec%60;
+  const el=document.getElementById('golden-time');
+  if(el){ el.textContent=`${m}:${s.toString().padStart(2,'0')}`; el.style.color=goldenSec<30*60?'var(--red)':goldenSec<60*60?'var(--amber)':'var(--green)'; }
+  const pct=(1-(goldenSec/(90*60)))*100;
+  const pg=document.getElementById('golden-prog');
+  if(pg){ pg.style.width=Math.min(100,pct)+'%'; pg.style.background=goldenSec<30*60?'var(--red)':goldenSec<60*60?'var(--amber)':'var(--green)'; }
+
+  // animate HR
+  const hr=document.getElementById('emgHR');
+  if(hr) hr.textContent=130+Math.round(Math.sin(Date.now()*.002)*8);
+  const sp=document.getElementById('emgSpo2');
+  if(sp) sp.textContent=(91+Math.round(Math.sin(Date.now()*.003)*2));
+
+  // ETA countdown
+  const etaEl=document.getElementById('emgEta');
+  if(etaEl){
+    const cur=parseInt(etaEl.textContent)||8;
+    if(cur>0 && Math.random()>.97) etaEl.textContent=Math.max(0,cur-1);
+  }
+},1000);
+
+// ── Init ──────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  setTimeout(drawMainChart,100);
+  // Periodic demo toast
+  setTimeout(()=>showToast('Alert mới — BN Suy tim','Nguyễn Văn Minh: SpO₂ 87% + cân nặng +2.3kg. Xem xét điều phối drone Furosemide.'),3000);
+});
+window.addEventListener('resize',()=>{drawMainChart(currentVital);drawFlightPath();drawPMChart();});
+</script>
+</body>
+</html>
