@@ -1,0 +1,2613 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAE SmartMEDVN</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+
+<style>
+/* ═══════════════════════════════════════════
+   RESET & VARIABLES
+   ═══════════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Blues — medical trust palette */
+  --blue-900: #1A3A5C;
+  --blue-700: #1E5A8A;
+  --blue-600: #2E86C1;
+  --blue-500: #3498DB;
+  --blue-200: #D6EAF8;
+  --blue-100: #EBF5FB;
+  --blue-50:  #F2F9FC;
+
+  /* Greens */
+  --green-600: #27AE60;
+  --green-500: #2ECC71;
+  --green-100: #EAFAF1;
+
+  /* Ambers */
+  --amber-600: #E67E22;
+  --amber-100: #FEF0E3;
+
+  /* Reds */
+  --red-600:   #E74C3C;
+  --red-100:   #FDEDEC;
+
+  /* Grays */
+  --gray-900: #1C2833;
+  --gray-700: #2C3E50;
+  --gray-500: #566573;
+  --gray-400: #85929E;
+  --gray-200: #D5DBDB;
+  --gray-100: #F2F3F4;
+  --gray-50:  #F8F9FA;
+  --white:    #FFFFFF;
+
+  /* Layout */
+  --bg:       #EEF2F5;
+  --card-bg:  #FFFFFF;
+  --radius:   12px;
+  --shadow:   0 2px 12px rgba(28,40,51,0.08);
+  --shadow-md:0 4px 20px rgba(28,40,51,0.12);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--gray-700);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════ */
+.wrapper {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+/* ═══════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════ */
+.header {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.header-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--blue-700);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-mark svg { width: 20px; height: 20px; }
+.logo-text {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--blue-900);
+  letter-spacing: -0.3px;
+}
+.logo-text span {
+  color: var(--blue-600);
+}
+
+/* ═══════════════════════════════════════════
+   NAV TABS
+   ═══════════════════════════════════════════ */
+.nav {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+.nav-btn {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-500);
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.nav-btn:hover {
+  background: var(--blue-100);
+  color: var(--blue-700);
+}
+.nav-btn.active {
+  background: var(--blue-700);
+  color: var(--white);
+}
+
+/* ═══════════════════════════════════════════
+   HERO BANNER
+   ═══════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 60%, var(--blue-600) 100%);
+  border-radius: 0;
+  padding: 48px 0;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+/* Subtle pattern overlay */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.hero-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 1;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.hero-badge .status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green-500);
+  animation: blink 2.4s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+.hero h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(24px, 3.2vw, 36px);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+}
+.hero p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.75);
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION HEADINGS
+   ═══════════════════════════════════════════ */
+.sec-head {
+  margin-bottom: 24px;
+}
+.sec-head h2 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--blue-900);
+  margin-bottom: 4px;
+}
+.sec-head p {
+  font-size: 14px;
+  color: var(--gray-400);
+}
+
+/* ═══════════════════════════════════════════
+   TAB PANELS
+   ═══════════════════════════════════════════ */
+.panel {
+  display: none;
+  animation: slide-in 0.35s ease;
+}
+.panel.active { display: block; }
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════
+   KPI ROW
+   ═══════════════════════════════════════════ */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.kpi-card {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.kpi-card .kpi-val {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--blue-700);
+  line-height: 1;
+}
+.kpi-card .kpi-label {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 6px;
+  font-weight: 500;
+}
+.kpi-card .kpi-sub {
+  font-size: 12px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+.kpi-sub.good  { color: var(--green-600); }
+.kpi-sub.warn  { color: var(--amber-600); }
+.kpi-sub.bad   { color: var(--red-600); }
+
+/* ═══════════════════════════════════════════
+   CARDS — General
+   ═══════════════════════════════════════════ */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.card:hover {
+  border-color: var(--blue-200);
+  box-shadow: var(--shadow-md);
+}
+.card-grid {
+  display: grid;
+  gap: 16px;
+}
+.card-grid--2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.card-grid--3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.card-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+.ci-blue   { background: var(--blue-100); }
+.ci-green  { background: var(--green-100); }
+.ci-amber  { background: var(--amber-100); }
+.ci-red    { background: var(--red-100); }
+
+.card-head h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.card-body {
+  font-size: 14px;
+  color: var(--gray-500);
+  line-height: 1.65;
+}
+
+/* ═══════════════════════════════════════════
+   BOTTLENECK ITEMS
+   ═══════════════════════════════════════════ */
+.bottleneck {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: start;
+  gap: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.bottleneck:hover { border-color: var(--blue-200); }
+
+.bn-num {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--blue-600);
+  line-height: 1;
+  padding-top: 2px;
+}
+.bn-left h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+.bn-left p {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.6;
+}
+.bn-solution {
+  background: var(--green-100);
+  border: 1px solid rgba(39,174,96,0.25);
+  border-radius: 8px;
+  padding: 12px 16px;
+  min-width: 220px;
+  max-width: 260px;
+}
+.bn-solution .sol-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--green-600);
+  margin-bottom: 3px;
+}
+.bn-solution .sol-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.5;
+}
+
+/* Mobile: stack bottleneck */
+@media (max-width: 680px) {
+  .bottleneck {
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: auto auto;
+  }
+  .bn-solution {
+    grid-column: 1 / -1;
+    min-width: unset;
+    max-width: unset;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   INFO BOX
+   ═══════════════════════════════════════════ */
+.info-box {
+  background: var(--blue-50);
+  border: 1px solid var(--blue-200);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+.info-box .ib-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.info-box p {
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.65;
+}
+.info-box strong { color: var(--blue-700); }
+
+/* ═══════════════════════════════════════════
+   ARCH LAYERS (accordion)
+   ═══════════════════════════════════════════ */
+.arch-layer {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.arch-layer:hover { border-color: var(--blue-200); }
+
+.arch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  cursor: pointer;
+  user-select: none;
+  gap: 12px;
+}
+.arch-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.layer-badge {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.lb-1 { background: var(--blue-100);  color: var(--blue-700); }
+.lb-2 { background: var(--green-100); color: var(--green-600); }
+.lb-3 { background: var(--amber-100); color: var(--amber-600); }
+
+.arch-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.arch-toggle {
+  font-size: 18px;
+  color: var(--gray-400);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+.arch-layer.open .arch-toggle { transform: rotate(180deg); }
+
+.arch-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.arch-layer.open .arch-body { max-height: 600px; }
+
+.arch-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 0 22px 20px;
+}
+.arch-item {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.arch-item .ai-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--gray-400);
+  margin-bottom: 3px;
+}
+.arch-item .ai-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+/* connector between layers */
+.layer-connector {
+  width: 2px;
+  height: 18px;
+  background: linear-gradient(180deg, var(--blue-600), var(--green-600));
+  margin: 0 auto;
+  position: relative;
+}
+.layer-connector::after {
+  content: '▼';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: var(--green-600);
+}
+
+/* ═══════════════════════════════════════════
+   STATUS TABLE
+   ═══════════════════════════════════════════ */
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.status-table thead {
+  background: var(--blue-900);
+}
+.status-table th {
+  text-align: left;
+  padding: 12px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255,255,255,0.8);
+}
+.status-table td {
+  padding: 13px 18px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--gray-100);
+  color: var(--gray-700);
+}
+.status-table tr:last-child td { border-bottom: none; }
+.status-table tr:hover td { background: var(--blue-50); }
+.status-table .td-name { font-weight: 700; color: var(--gray-900); }
+
+/* Status tags */
+.stag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.stag::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+}
+.stag-ok    { background: var(--green-100); color: var(--green-600); }
+.stag-ok::before { background: var(--green-600); }
+.stag-mid   { background: var(--amber-100); color: var(--amber-600); }
+.stag-mid::before { background: var(--amber-600); }
+.stag-need  { background: var(--red-100);   color: var(--red-600);   }
+.stag-need::before { background: var(--red-600); }
+
+/* ═══════════════════════════════════════════
+   ROI CHART (SVG responsive)
+   ═══════════════════════════════════════════ */
+.chart-card {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+.chart-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 2px;
+}
+.chart-card .chart-sub {
+  font-size: 13px;
+  color: var(--gray-400);
+  margin-bottom: 16px;
+}
+.chart-card svg { width: 100%; height: auto; display: block; }
+
+/* ═══════════════════════════════════════════
+   COMPARE TABLE (2-col: traditional vs LAE)
+   ═══════════════════════════════════════════ */
+.compare-wrap {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.compare-wrap table { width: 100%; border-collapse: collapse; }
+.compare-wrap thead th {
+  padding: 13px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 2px solid var(--gray-200);
+}
+.compare-wrap thead th:first-child { text-align: left; background: var(--gray-50); color: var(--gray-700); }
+.compare-wrap thead th.col-trad  { background: var(--gray-100); color: var(--gray-700); }
+.compare-wrap thead th.col-lae   { background: var(--blue-700); color: var(--white); }
+
+.compare-wrap tbody td {
+  padding: 12px 18px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--gray-100);
+  text-align: center;
+  color: var(--gray-500);
+}
+.compare-wrap tbody td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: var(--gray-900);
+  background: var(--gray-50);
+}
+.compare-wrap tbody tr:last-child td { border-bottom: none; }
+.compare-wrap tbody tr:hover td { background: #fafbfc; }
+.compare-wrap .val-better {
+  color: var(--green-600);
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════
+   COST BREAKDOWN BARS
+   ═══════════════════════════════════════════ */
+.cost-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.cost-row span:first-child { font-size: 13px; color: var(--gray-700); }
+.cost-row span:last-child  { font-size: 13px; font-weight: 700; color: var(--blue-700); }
+.bar-track {
+  height: 7px;
+  background: var(--gray-100);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--blue-600);
+  transition: width 0.8s ease;
+}
+.bar-fill.green { background: var(--green-600); }
+.bar-fill.amber { background: var(--amber-600); }
+
+/* ═══════════════════════════════════════════
+   TIMELINE
+   ═══════════════════════════════════════════ */
+.timeline {
+  position: relative;
+  padding-left: 44px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--blue-600), var(--green-600), var(--amber-600), var(--blue-900));
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 24px;
+}
+.tl-dot {
+  position: absolute;
+  left: -29px;
+  top: 6px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--white);
+  box-shadow: 0 0 0 2px currentColor;
+}
+.tl-dot.blue  { color: var(--blue-600); background: var(--blue-600); }
+.tl-dot.green { color: var(--green-600); background: var(--green-600); }
+.tl-dot.amber { color: var(--amber-600); background: var(--amber-600); }
+.tl-dot.dark  { color: var(--blue-900); background: var(--blue-900); }
+
+.tl-phase {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--blue-600);
+  margin-bottom: 4px;
+}
+.tl-card {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s;
+}
+.tl-card:hover { border-color: var(--blue-200); }
+.tl-card h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 6px;
+}
+.tl-card p {
+  font-size: 13px;
+  color: var(--gray-500);
+  line-height: 1.65;
+}
+.tl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.tl-tag {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 14px;
+}
+.tl-tag.blue  { background: var(--blue-100);  color: var(--blue-700); }
+.tl-tag.green { background: var(--green-100); color: var(--green-600); }
+.tl-tag.amber { background: var(--amber-100); color: var(--amber-600); }
+.tl-tag.dark  { background: #EDE7F6;         color: #6A1B9A; }
+
+/* ═══════════════════════════════════════════
+   RISK CARDS
+   ═══════════════════════════════════════════ */
+.risk-section-label {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.risk-card {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+.risk-card:hover { border-color: var(--gray-200); }
+.risk-badge {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.rb-high  { background: var(--red-100);   color: var(--red-600); }
+.rb-med   { background: var(--amber-100); color: var(--amber-600); }
+.rb-low   { background: var(--green-100); color: var(--green-600); }
+
+.risk-card h4 { font-size: 14px; font-weight: 700; color: var(--gray-900); margin-bottom: 3px; }
+.risk-card p  { font-size: 13px; color: var(--gray-500); line-height: 1.55; }
+.risk-fix {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue-700);
+  margin-top: 6px;
+}
+
+/* ═══════════════════════════════════════════
+   UTILITY
+   ═══════════════════════════════════════════ */
+.mb-8  { margin-bottom: 8px; }
+.mb-20 { margin-bottom: 20px; }
+.mb-28 { margin-bottom: 28px; }
+.mt-28 { margin-top: 28px; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .header-inner { flex-direction: column; align-items: flex-start; }
+  .nav { gap: 0; }
+  .nav-btn { padding: 7px 12px; font-size: 13px; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .card-grid--2,
+  .card-grid--3 { grid-template-columns: 1fr; }
+  .compare-wrap { overflow-x: auto; }
+  .compare-wrap table { min-width: 480px; }
+  .risk-grid { grid-template-columns: 1fr; }
+  .timeline { padding-left: 36px; }
+  .timeline::before { left: 15px; }
+  .tl-dot { left: -25px; }
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR (subtle)
+   ═══════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+/* ═══════════════════════════════════════════
+   SIMULATION PANEL
+   ═══════════════════════════════════════════ */
+
+/* Top bar: controls + live KPIs */
+.sim-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.sim-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sim-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sim-btn:hover {
+  background: var(--blue-100);
+  border-color: var(--blue-200);
+  color: var(--blue-700);
+}
+.sim-btn.active-play {
+  background: var(--blue-700);
+  border-color: var(--blue-700);
+  color: var(--white);
+}
+.sim-btn.btn-reset {
+  color: var(--gray-400);
+}
+.sim-btn.btn-reset:hover {
+  color: var(--red-600);
+  background: var(--red-100);
+  border-color: var(--red-600);
+}
+.sim-speed-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 12px;
+  border-left: 1px solid var(--gray-200);
+  padding-left: 12px;
+}
+.sim-speed-label {
+  font-size: 12px;
+  color: var(--gray-400);
+  font-weight: 600;
+  margin-right: 4px;
+}
+.sim-speed-btn {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 6px;
+  width: 32px;
+  height: 30px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sim-speed-btn:hover { background: var(--blue-100); color: var(--blue-700); border-color: var(--blue-200); }
+.sim-speed-btn.active { background: var(--blue-700); color: var(--white); border-color: var(--blue-700); }
+
+/* Live KPI strip */
+.sim-live-strip {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sim-live-item {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow);
+}
+.sim-live-item .sli-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--gray-400);
+}
+.sim-live-item .sli-val {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--blue-700);
+}
+.sim-live-item.live-green .sli-val { color: var(--green-600); }
+.sim-live-item.live-amber .sli-val { color: var(--amber-600); }
+
+/* Main layout: map left + info right */
+.sim-layout {
+  display: grid;
+  grid-template-columns: 1.55fr 0.45fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .sim-layout { grid-template-columns: 1fr; }
+}
+
+/* ─── MAP CARD ─── */
+.sim-map-card {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.sim-map-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sim-map-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.sim-map-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.sim-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 600;
+}
+.sim-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.sim-svg-wrap {
+  width: 100%;
+  background: #dceefe;
+}
+.sim-svg-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ─── RIGHT COLUMN ─── */
+.sim-right { display: flex; flex-direction: column; gap: 14px; }
+
+/* GPS Panel */
+.sim-gps-card {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.sim-gps-head {
+  background: var(--blue-900);
+  color: var(--white);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sim-gps-head .gps-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green-500);
+  animation: blink 1.4s ease-in-out infinite;
+}
+.sim-gps-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--gray-100);
+}
+.sim-gps-item {
+  background: var(--card-bg);
+  padding: 10px 12px;
+}
+.sim-gps-item .gps-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--gray-400);
+  margin-bottom: 2px;
+}
+.sim-gps-item .gps-val {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+.sim-gps-item .gps-val.battery-high { color: var(--green-600); }
+.sim-gps-item .gps-val.battery-mid  { color: var(--amber-600); }
+.sim-gps-item .gps-val.battery-low  { color: var(--red-600); }
+
+/* Battery mini-bar */
+.sim-battery-bar {
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+.sim-battery-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--green-600);
+  transition: width 0.3s, background 0.3s;
+}
+.sim-battery-fill.mid  { background: var(--amber-600); }
+.sim-battery-fill.low  { background: var(--red-600); }
+
+/* Flight Log */
+.sim-log-card {
+  background: var(--card-bg);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  max-height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+.sim-log-head {
+  background: var(--gray-900);
+  color: var(--white);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.sim-log-body {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px 0;
+}
+.sim-log-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  transition: background 0.15s;
+}
+.sim-log-item:last-child { border-bottom: none; }
+.sim-log-item:hover { background: var(--gray-50); }
+.sim-log-item.log-active { background: var(--blue-50); }
+
+.sim-log-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue-600);
+  white-space: nowrap;
+  min-width: 48px;
+  padding-top: 1px;
+}
+.sim-log-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.ld-blue  { background: var(--blue-600); }
+.ld-green { background: var(--green-600); }
+.ld-amber { background: var(--amber-600); }
+.ld-red   { background: var(--red-600); }
+
+.sim-log-text {
+  font-size: 13px;
+  color: var(--gray-700);
+  line-height: 1.45;
+}
+.sim-log-text strong { color: var(--gray-900); }
+
+/* ─── MAP SVG internals ─── */
+.sim-water     { fill: #dceefe; }
+.sim-land      { fill: #e8efe0; stroke: #c5d4b5; stroke-width: 1; }
+.sim-island    { fill: #dde9c9; stroke: #b8ccaa; stroke-width: 0.8; }
+.sim-city-area { fill: rgba(46,134,193,0.08); stroke: var(--blue-200); stroke-width: 1; stroke-dasharray: 4,3; }
+
+/* Route line (behind drone) */
+.sim-route-bg  { fill: none; stroke: var(--gray-200); stroke-width: 3; stroke-linecap: round; }
+.sim-route-done { fill: none; stroke: var(--blue-600); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 8,4; }
+.sim-route-ahead { fill: none; stroke: var(--blue-200); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 6,5; }
+
+/* Vertiport markers */
+.sim-vp-circle { fill: var(--white); stroke: var(--blue-600); stroke-width: 2; }
+.sim-vp-circle.reached { stroke: var(--green-600); fill: var(--green-100); }
+.sim-vp-label  { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; fill: var(--gray-900); }
+.sim-vp-sub    { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 9px; fill: var(--gray-400); }
+
+/* Destination pulse ring */
+.sim-dest-ring {
+  fill: none;
+  stroke: var(--red-600);
+  stroke-width: 2;
+  opacity: 0;
+  animation: dest-pulse 2.2s ease-out infinite;
+}
+@keyframes dest-pulse {
+  0%   { opacity: 0.7; r: 12; }
+  100% { opacity: 0;   r: 28; }
+}
+
+/* Drone shadow on map */
+.sim-drone-shadow {
+  fill: rgba(46,134,193,0.15);
+  animation: shadow-scale 1.6s ease-in-out infinite alternate;
+}
+@keyframes shadow-scale {
+  from { transform: scale(1);   opacity: 0.25; }
+  to   { transform: scale(1.3); opacity: 0.12; }
+}
+
+/* ─── VERTIPORT INFO ROW (below map) ─── */
+.sim-vp-strip {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.sim-vp-chip {
+  background: var(--card-bg);
+  border: 2px solid var(--gray-200);
+  border-radius: 10px;
+  padding: 8px 14px;
+  flex: 1;
+  min-width: 130px;
+  text-align: center;
+  transition: border-color 0.3s, background 0.3s;
+}
+.sim-vp-chip.vp-reached {
+  border-color: var(--green-600);
+  background: var(--green-100);
+}
+.sim-vp-chip.vp-current {
+  border-color: var(--blue-600);
+  background: var(--blue-50);
+  box-shadow: 0 0 0 2px var(--blue-200);
+}
+.sim-vp-chip .vpc-code {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--blue-700);
+}
+.sim-vp-chip.vp-reached .vpc-code { color: var(--green-600); }
+.sim-vp-chip .vpc-name {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 2px;
+  font-weight: 600;
+}
+.sim-vp-chip .vpc-status {
+  font-size: 10px;
+  color: var(--gray-400);
+  margin-top: 1px;
+}
+.sim-vp-chip.vp-reached .vpc-status { color: var(--green-600); font-weight: 700; }
+.sim-vp-chip.vp-current .vpc-status  { color: var(--blue-600); font-weight: 700; }
+
+/* Arrow between chips */
+.sim-vp-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--gray-300);
+  font-size: 18px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ─── STICKY HEADER ─── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-text" style="display: flex; align-items: center; gap: 12px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        <svg width="45" height="45" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 10h16M12 7v6" stroke="#004a87" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="4" cy="10" r="1.5" fill="#004a87"/>
+            <circle cx="20" cy="10" r="1.5" fill="#004a87"/>
+            <path d="M2 10h4M18 10h4" stroke="#004a87" stroke-width="1"/>
+            <circle cx="12" cy="15" r="6" stroke="#4a4a4a" stroke-width="1.5"/>
+            <path d="M12 12.5v5M9.5 15h5" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+
+        <div style="display: flex; flex-direction: column; line-height: 1.2;">
+            <span style="font-size: 20px; font-weight: 700; color: #4a4a4a;">
+                LAE <span style="color: #2980b9;">SmartMedVN</span>
+            </span>
+            <span style="font-size: 12px; font-weight: 400; color: #888; letter-spacing: 0.5px;">
+                @2026BinhMinhAI
+            </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-tab="overview">Tổng quan</button>
+      <button class="nav-btn" data-tab="technical">Kỹ thuật</button>
+      <button class="nav-btn" data-tab="roi">ROI & Đầu tư</button>
+      <button class="nav-btn" data-tab="roadmap">Lộ trình</button>
+      <button class="nav-btn" data-tab="risk">Rủi ro</button>
+      <button class="nav-btn" data-tab="simulation">🛩️ Mô phỏng Bay</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="status-dot"></span> Phân tích Kỹ thuật &amp; Kế hoạch Triển khai 2025</div>
+    <h1>Hệ thống LAE kết hợp Y tế Số<br>cho Việt Nam</h1>
+    <p>Phân tích toàn diện về khung kỹ thuật, đánh giá ROI và lộ trình triển khai hệ thống vận chuyển y tế tầm thấp tích hợp công nghệ số cho chuỗi cung ứng y tế quốc gia.</p>
+  </div>
+</section>
+
+<!-- ─── MAIN CONTENT ─── -->
+<div class="wrapper">
+
+  <!-- ═══ PANEL: OVERVIEW ═══ -->
+  <div class="panel active" id="panel-overview">
+
+    <!-- KPI -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-val">100M</div>
+        <div class="kpi-label">Dân số cần phục vụ</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">34</div>
+        <div class="kpi-label">Tỉnh / Thành phố</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">~11</div>
+        <div class="kpi-label">Bác sĩ / 10K dân</div>
+        <div class="kpi-sub bad">↓ Thấp hơn tiêu chuẩn WHO</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">11K+</div>
+        <div class="kpi-label">Trạm y tế xã cấp cơ sở</div>
+        <div class="kpi-sub warn">↓ Thiếu nhân lực &amp; thuốc</div>
+      </div>
+    </div>
+
+    <!-- Context row -->
+    <div class="card-grid card-grid--3 mb-28">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon ci-blue">🏙️</div>
+          <h3>Đô thị lớn</h3>
+        </div>
+        <div class="card-body">52M+ dân sống trong các thành phố với hạ tầng giao thông quá tải. Xe cứu thương thường bị kẹt trong giờ cao điểm.</div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon ci-amber">🏝️</div>
+          <h3>Biển đảo &amp; Vùng sâu</h3>
+        </div>
+        <div class="card-body">3.000+ hòn đảo và vùng núi chia cắt khiến chi phí, thời gian tiếp cận dịch vụ y tế quá lớn.</div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-icon ci-green">📶</div>
+          <h3>Hạ tầng số</h3>
+        </div>
+        <div class="card-body">85%+ phủ 4G/5G tại đô thị. Nền tảng mạng viễn thông đang mở rộng nhanh ra các vùng tỉnh.</div>
+      </div>
+    </div>
+
+    <!-- 4 Bottlenecks -->
+    <div class="sec-head">
+      <h2>4 Điểm nghẽn cốt lõi &amp; Giải pháp</h2>
+      <p>Mỗi điểm nghẽn được giải quyết bởi một thành phần tích hợp của hệ thống</p>
+    </div>
+
+    <div class="bottleneck">
+      <div class="bn-num">01</div>
+      <div class="bn-left">
+        <h4>Điểm nghẽn Thời gian — Đô thị</h4>
+        <p>Xe cứu thương và vận chuyển máu, tạng hiến bị kẹt trong giao thông đô thị, ảnh hưởng trực tiếp đến "thời gian vàng" trong cấp cứu.</p>
+      </div>
+      <div class="bn-solution">
+        <div class="sol-tag">Giải pháp LAE</div>
+        <div class="sol-text">Hành lang bay ưu tiên tầm thấp — vận chuyển tự động, không phụ thuộc mặt đất</div>
+      </div>
+    </div>
+
+    <div class="bottleneck">
+      <div class="bn-num">02</div>
+      <div class="bn-left">
+        <h4>Điểm nghẽn Địa lý — Vùng sâu / Biển đảo</h4>
+        <p>Địa hình chia cắt, chi phí và thời gian đi lại quá lớn để tiếp cận dịch vụ y tế chất lượng cao.</p>
+      </div>
+      <div class="bn-solution">
+        <div class="sol-tag">Giải pháp LAE</div>
+        <div class="sol-text">Drone vận chuyển mẫu xét nghiệm, thuốc, sinh phẩm đến các trạm đáp xa nhất</div>
+      </div>
+    </div>
+
+    <div class="bottleneck">
+      <div class="bn-num">03</div>
+      <div class="bn-left">
+        <h4>Điểm nghẽn Hạ tầng — Y tế Cơ sở</h4>
+        <p>11.000+ trạm y tế xã thiếu nhân lực, thuốc đặc trị và sinh phẩm do khó khăn trong vận chuyển từ tuyến trên.</p>
+      </div>
+      <div class="bn-solution">
+        <div class="sol-tag">Cung ứng tự động</div>
+        <div class="sol-text">Hệ thống cung ứng tần suất cao, chính xác tuyệt đối cho y tế cơ sở</div>
+      </div>
+    </div>
+
+    <div class="bottleneck">
+      <div class="bn-num">04</div>
+      <div class="bn-left">
+        <h4>Điểm nghẽn Số — Dữ liệu rời rạc</h4>
+        <p>Hồ sơ y tế chưa đồng bộ giữa các tuyến, chưa kết nối thực sự với quy trình vận hành vật lý trên thực tế.</p>
+      </div>
+      <div class="bn-solution">
+        <div class="sol-tag">Số hóa toàn tuyến</div>
+        <div class="sol-text">AI + Cloud điều phối, Real-time tracking, EMR đồng bộ từ Trung ương đến xã</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="ib-icon">💡</span>
+      <p><strong>Luận điểm cốt lõi:</strong> Đây không đơn giản là "bay tầm thấp". Đây là <strong>kết hợp số hóa dữ liệu y tế và tối ưu hóa luồng luân chuyển tài nguyên y tế</strong> — đảm bảo thông tin, thuốc, máu, mẫu bệnh phẩm, tạng hiến gặp nhau tại đúng thời điểm, bất chấp rào cản địa lý và giao thông.</p>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL: TECHNICAL ═══ -->
+  <div class="panel" id="panel-technical">
+    <div class="sec-head">
+      <h2>Kiến trúc Hệ thống — 3 Lớp tích hợp</h2>
+      <p>Nhấp vào từng lớp để xem chi tiết kỹ thuật</p>
+    </div>
+
+    <!-- Layer 1 -->
+    <div class="arch-layer open" id="layer-1">
+      <div class="arch-header" onclick="toggleLayer('layer-1')">
+        <div class="arch-header-left">
+          <div class="layer-badge lb-1">L1</div>
+          <h3>Layer Hạ tầng Bay — LAE</h3>
+        </div>
+        <span class="arch-toggle">▼</span>
+      </div>
+      <div class="arch-body">
+        <div class="arch-detail-grid">
+          <div class="arch-item"><div class="ai-label">Thiết bị</div><div class="ai-val">Multi-rotor UAV (6–12 cánh)</div></div>
+          <div class="arch-item"><div class="ai-label">Tải lượng tối đa</div><div class="ai-val">2–5 kg (máu, thuốc, AED)</div></div>
+          <div class="arch-item"><div class="ai-label">Tốc độ bay</div><div class="ai-val">60–90 km/h (đô thị)</div></div>
+          <div class="arch-item"><div class="ai-label">Thời gian bay</div><div class="ai-val">25–40 phút / chuyến</div></div>
+          <div class="arch-item"><div class="ai-label">Hành lang bay</div><div class="ai-val">Ưu tiên riêng, 50–120m</div></div>
+          <div class="arch-item"><div class="ai-label">Cấp phép</div><div class="ai-val">Cục Hàng không VN (CVAA)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-connector"></div>
+
+    <!-- Layer 2 -->
+    <div class="arch-layer" id="layer-2">
+      <div class="arch-header" onclick="toggleLayer('layer-2')">
+        <div class="arch-header-left">
+          <div class="layer-badge lb-2">L2</div>
+          <h3>Layer Dữ liệu Số — Digital Health</h3>
+        </div>
+        <span class="arch-toggle">▼</span>
+      </div>
+      <div class="arch-body">
+        <div class="arch-detail-grid">
+          <div class="arch-item"><div class="ai-label">AI Orchestrator</div><div class="ai-val">Route tối ưu, dự báo nhu cầu</div></div>
+          <div class="arch-item"><div class="ai-label">Telemedicine</div><div class="ai-val">Khám từ xa + ra lệnh xuất kho</div></div>
+          <div class="arch-item"><div class="ai-label">EMR</div><div class="ai-val">Hồ sơ sức khỏe điện tử toàn tuyến</div></div>
+          <div class="arch-item"><div class="ai-label">Cloud</div><div class="ai-val">Multi-region (VN-based)</div></div>
+          <div class="arch-item"><div class="ai-label">Real-time Tracking</div><div class="ai-val">GPS + RFID → hồ sơ bệnh án</div></div>
+          <div class="arch-item"><div class="ai-label">Warehouse Auto</div><div class="ai-val">Xuất kho tự động theo đơn thuốc</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-connector"></div>
+
+    <!-- Layer 3 -->
+    <div class="arch-layer" id="layer-3">
+      <div class="arch-header" onclick="toggleLayer('layer-3')">
+        <div class="arch-header-left">
+          <div class="layer-badge lb-3">L3</div>
+          <h3>Layer Kết nối — IoT &amp; 5G/6G</h3>
+        </div>
+        <span class="arch-toggle">▼</span>
+      </div>
+      <div class="arch-body">
+        <div class="arch-detail-grid">
+          <div class="arch-item"><div class="ai-label">Network chính</div><div class="ai-val">5G SA — Viettel, Mobifone</div></div>
+          <div class="arch-item"><div class="ai-label">Độ trễ mục tiêu</div><div class="ai-val">&lt;10ms (điều khiển drone)</div></div>
+          <div class="arch-item"><div class="ai-label">Backup</div><div class="ai-val">LEO Satellite (vùng xa/đảo)</div></div>
+          <div class="arch-item"><div class="ai-label">IoT Sensors</div><div class="ai-val">Nhiệt độ, độ ẩm sinh phẩm</div></div>
+          <div class="arch-item"><div class="ai-label">Bảo mật</div><div class="ai-val">End-to-end encryption (HIPAA)</div></div>
+          <div class="arch-item"><div class="ai-label">6G Roadmap</div><div class="ai-val">Migration 2028–2030</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Table -->
+    <div class="sec-head mt-28">
+      <h2>Đánh giá trạng thái kỹ thuật tại Việt Nam</h2>
+      <p>Readiness assessment cho từng thành phần hệ thống</p>
+    </div>
+    <table class="status-table">
+      <thead>
+        <tr>
+          <th>Thành phần</th>
+          <th>Yêu cầu tối thiểu</th>
+          <th>Mức độ mong đợi</th>
+          <th>Trạng thái VN</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="td-name">UAV Payload</td><td>2 kg (túi máu cấp cứu)</td><td>5 kg (AED + thuốc)</td><td><span class="stag stag-ok">Có sẵn</span></td></tr>
+        <tr><td class="td-name">5G Coverage</td><td>Đô thị lớn (HN, HCM)</td><td>Tỉnh thành + hành lang y tế</td><td><span class="stag stag-mid">Đang mở rộng</span></td></tr>
+        <tr><td class="td-name">AI Compute</td><td>Edge AI trên UAV</td><td>GPU Cloud + On-device</td><td><span class="stag stag-ok">Cloud có sẵn</span></td></tr>
+        <tr><td class="td-name">EMR System</td><td>Đồng bộ 2 tuyến</td><td>Đồng bộ toàn tuyến TW→xã</td><td><span class="stag stag-need">Cần phát triển</span></td></tr>
+        <tr><td class="td-name">Bảo mật dữ liệu</td><td>AES-256 mã hóa</td><td>Zero-trust + blockchain audit</td><td><span class="stag stag-mid">Đang triển khai</span></td></tr>
+        <tr><td class="td-name">Landing Pad</td><td>Rooftop bệnh viện (H-pad)</td><td>Micro-pads (500m spacing)</td><td><span class="stag stag-need">Cần xây dựng</span></td></tr>
+        <tr><td class="td-name">Quy định pháp lý</td><td>Giấy phép CVAA bay đô thị</td><td>Khung pháp lý LAE y tế</td><td><span class="stag stag-mid">Đang thảo luận</span></td></tr>
+      </tbody>
+    </table>
+
+    <!-- Data flow info -->
+    <div class="info-box">
+      <span class="ib-icon">🔄</span>
+      <p><strong>Luồng dữ liệu thực tế:</strong> Bác sĩ khám từ xa (Telemedicine) → Ra lệnh xuất kho thuốc tự động → Warehouse đóng gói → Drone nhận tải → 5G real-time tracking → Cập nhật hồ sơ bệnh án điện tử → Ekip điều trị chủ động tiếp nhận → <strong>Rút ngắn thời gian từ giờ về phút.</strong></p>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL: ROI ═══ -->
+  <div class="panel" id="panel-roi">
+    <div class="sec-head">
+      <h2>Đánh giá ROI &amp; Hiệu quả Đầu tư</h2>
+      <p>Phân tích chi phí — lợi ích so sánh với phương pháp truyền thống</p>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-val">$180M</div>
+        <div class="kpi-label">Tổng đầu tư 5 năm</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">3.2×</div>
+        <div class="kpi-label">ROI dự kiến (5 năm)</div>
+        <div class="kpi-sub good">↑ vs 1.8× phương pháp truyền thống</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">38%</div>
+        <div class="kpi-label">Giảm tử vong cấp cứu</div>
+        <div class="kpi-sub good">↑ Golden hour impact</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">2.8 năm</div>
+        <div class="kpi-label">Thời gian thu hồi vốn</div>
+        <div class="kpi-sub good">↓ vs 5 năm truyền thống</div>
+      </div>
+    </div>
+
+    <!-- ROI Chart -->
+    <div class="chart-card">
+      <h3>Dự báo ROI tích lũy — 5 năm triển khai</h3>
+      <p class="chart-sub">Chi phí đầu tư (đỏ) vs. Lợi ích tích lũy (xanh lá) — đơn vị: triệu USD</p>
+      <!-- SVG with viewBox for full responsiveness -->
+      <svg viewBox="0 0 880 260" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="gCost" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#E74C3C" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#E74C3C" stop-opacity="0.02"/>
+          </linearGradient>
+          <linearGradient id="gBenefit" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#27AE60" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#27AE60" stop-opacity="0.02"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Y-axis grid lines & labels  (0=220, 150=148, 300=76, 450=4) scale: 1M = 0.48px -->
+        <!-- We use: 0→y220, 100→y172, 200→y124, 300→y76, 400→y28   scale: 100M = 48px? too small -->
+        <!-- Better: max 600M. 0→y230, 600→y20. 1M = 0.35px. -->
+        <!-- 0→230  150→177.5  300→125  450→72.5  600→20 -->
+        <line x1="60" y1="230" x2="830" y2="230" stroke="#E8ECF0" stroke-width="1"/>
+        <line x1="60" y1="177" x2="830" y2="177" stroke="#E8ECF0" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="60" y1="125" x2="830" y2="125" stroke="#E8ECF0" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="60" y1="72"  x2="830" y2="72"  stroke="#E8ECF0" stroke-width="1" stroke-dasharray="5,4"/>
+        <line x1="60" y1="20"  x2="830" y2="20"  stroke="#E8ECF0" stroke-width="1" stroke-dasharray="5,4"/>
+
+        <!-- Y labels -->
+        <text x="50" y="234" text-anchor="end" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">0</text>
+        <text x="50" y="181" text-anchor="end" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">150</text>
+        <text x="50" y="129" text-anchor="end" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">300</text>
+        <text x="50" y="76"  text-anchor="end" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">450</text>
+        <text x="50" y="24"  text-anchor="end" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">600</text>
+
+        <!-- X labels: 2025→x160, 2026→x315, 2027→x470, 2028→x625, 2029→x780 -->
+        <text x="160" y="250" text-anchor="middle" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">2025</text>
+        <text x="315" y="250" text-anchor="middle" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">2026</text>
+        <text x="470" y="250" text-anchor="middle" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">2027</text>
+        <text x="625" y="250" text-anchor="middle" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">2028</text>
+        <text x="780" y="250" text-anchor="middle" fill="#85929E" font-size="11" font-family="Plus Jakarta Sans">2029</text>
+
+        <!-- COST cumulative: 40,90,130,160,180 → y: 230-(val*0.35)
+             40→216  90→198.5  130→184.5  160→174  180→167 -->
+        <path d="M160,216 L315,198.5 L470,184.5 L625,174 L780,167 L780,230 L160,230 Z" fill="url(#gCost)"/>
+        <polyline points="160,216 315,198.5 470,184.5 625,174 780,167" fill="none" stroke="#E74C3C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Cost dots + labels -->
+        <circle cx="160" cy="216"   r="4" fill="#E74C3C"/>
+        <circle cx="315" cy="198.5" r="4" fill="#E74C3C"/>
+        <circle cx="470" cy="184.5" r="4" fill="#E74C3C"/>
+        <circle cx="625" cy="174"   r="4" fill="#E74C3C"/>
+        <circle cx="780" cy="167"   r="4" fill="#E74C3C"/>
+        <text x="160" y="208" text-anchor="middle" fill="#E74C3C" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$40M</text>
+        <text x="315" y="191" text-anchor="middle" fill="#E74C3C" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$90M</text>
+        <text x="470" y="177" text-anchor="middle" fill="#E74C3C" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$130M</text>
+        <text x="625" y="166" text-anchor="middle" fill="#E74C3C" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$160M</text>
+        <text x="780" y="159" text-anchor="middle" fill="#E74C3C" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$180M</text>
+
+        <!-- BENEFIT cumulative: 55,150,280,420,576 → y: 230-(val*0.35)
+             55→210.75  150→177.5  280→132  420→83  576→28.4 -->
+        <path d="M160,210.75 L315,177.5 L470,132 L625,83 L780,28.4 L780,230 L160,230 Z" fill="url(#gBenefit)"/>
+        <polyline points="160,210.75 315,177.5 470,132 625,83 780,28.4" fill="none" stroke="#27AE60" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Benefit dots + labels -->
+        <circle cx="160" cy="210.75" r="4" fill="#27AE60"/>
+        <circle cx="315" cy="177.5"  r="4" fill="#27AE60"/>
+        <circle cx="470" cy="132"    r="4" fill="#27AE60"/>
+        <circle cx="625" cy="83"     r="4" fill="#27AE60"/>
+        <circle cx="780" cy="28.4"   r="4" fill="#27AE60"/>
+        <text x="175" y="206" text-anchor="start" fill="#27AE60" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$55M</text>
+        <text x="330" y="172" text-anchor="start" fill="#27AE60" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$150M</text>
+        <text x="485" y="126" text-anchor="start" fill="#27AE60" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$280M</text>
+        <text x="640" y="77"  text-anchor="start" fill="#27AE60" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$420M</text>
+        <text x="740" y="21"  text-anchor="end"   fill="#27AE60" font-size="10" font-weight="600" font-family="Plus Jakarta Sans">$576M</text>
+
+        <!-- Break-even line ~mid 2027: x≈395 (between 315 and 470) -->
+        <line x1="395" y1="15" x2="395" y2="230" stroke="#E67E22" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <rect x="360" y="8" width="70" height="18" rx="4" fill="#FEF0E3" stroke="#E67E22" stroke-width="1"/>
+        <text x="395" y="21" text-anchor="middle" fill="#E67E22" font-size="10" font-weight="700" font-family="Plus Jakarta Sans">Break-even</text>
+
+        <!-- Legend -->
+        <rect x="80"  y="242" width="14" height="3" rx="1.5" fill="#E74C3C"/>
+        <text x="100" y="247" fill="#566573" font-size="11" font-family="Plus Jakarta Sans">Chi phí đầu tư</text>
+        <rect x="240" y="242" width="14" height="3" rx="1.5" fill="#27AE60"/>
+        <text x="260" y="247" fill="#566573" font-size="11" font-family="Plus Jakarta Sans">Lợi ích tích lũy</text>
+        <line  x1="380" y1="244" x2="396" y2="244" stroke="#E67E22" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="402" y="247" fill="#566573" font-size="11" font-family="Plus Jakarta Sans">Break-even (~2027 Q2)</text>
+      </svg>
+    </div>
+
+    <!-- Compare table -->
+    <div class="sec-head">
+      <h2>So sánh: Truyền thống vs Hệ thống LAE</h2>
+      <p>Chi phí và hiệu quả theo từng loại dịch vụ y tế</p>
+    </div>
+    <div class="compare-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:34%">Chỉ tiêu</th>
+            <th class="col-trad" style="width:33%">Phương pháp truyền thống</th>
+            <th class="col-lae"  style="width:33%">Hệ thống LAE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Thời gian vận chuyển (đô thị)</td><td>25–60 phút</td><td class="val-better">8–15 phút</td></tr>
+          <tr><td>Chi phí / chuyến vận chuyển khẩn</td><td>$150–300</td><td class="val-better">$60–120</td></tr>
+          <tr><td>Tỷ lệ thành công cấp cứu "golden hour"</td><td>~62%</td><td class="val-better">85–90%</td></tr>
+          <tr><td>Chi phí mở rộng hạ tầng vùng xa</td><td>$2–5M / tỉnh</td><td class="val-better">$0.3–0.8M / tỉnh</td></tr>
+          <tr><td>Nhân lực logistics cần thiết</td><td>15–20 người / hub</td><td class="val-better">3–5 người / hub</td></tr>
+          <tr><td>Tần suất cung ứng thuốc / sinh phẩm</td><td>1–2 lần / tuần</td><td class="val-better">Hàng ngày / On-demand</td></tr>
+          <tr><td>Hoạt động trong tình huống dịch bệnh</td><td>Giảm 40–60%</td><td class="val-better">Duy trì 90%+</td></tr>
+          <tr><td>Khả năng mở rộng</td><td>Linear (đầu tư mới)</td><td class="val-better">Exponential (thêm drone)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cost breakdown -->
+    <div class="sec-head">
+      <h2>Phân tích chi phí chi tiết</h2>
+      <p>Cấu trúc đầu tư theo 3 danh mục chính</p>
+    </div>
+    <div class="card-grid card-grid--3">
+      <div class="card">
+        <div class="card-head"><div class="card-icon ci-blue">✈️</div><h3>Hardware &amp; UAV Fleet</h3></div>
+        <div class="card-body">
+          <div class="cost-row"><span>Drone fleet (200 đầu)</span><span>$45M</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:54%"></div></div>
+          <div class="cost-row"><span>Landing pads &amp; hạ tầng</span><span>$25M</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:30%"></div></div>
+          <div class="cost-row"><span>Linh kiện &amp; bảo dưỡng</span><span>$12M</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:15%"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-icon ci-green">💻</div><h3>Software &amp; AI Platform</h3></div>
+        <div class="card-body">
+          <div class="cost-row"><span>AI &amp; Cloud infrastructure</span><span>$30M</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width:50%"></div></div>
+          <div class="cost-row"><span>EMR + Telemedicine</span><span>$22M</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width:37%"></div></div>
+          <div class="cost-row"><span>Hệ thống bảo mật</span><span>$8M</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width:14%"></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-icon ci-amber">📡</div><h3>Network &amp; Operations</h3></div>
+        <div class="card-body">
+          <div class="cost-row"><span>Tích hợp 5G &amp; IoT</span><span>$18M</span></div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:55%"></div></div>
+          <div class="cost-row"><span>Đào tạo &amp; nhân sự</span><span>$10M</span></div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:31%"></div></div>
+          <div class="cost-row"><span>Pháp lý &amp; tuân thủ</span><span>$5M</span></div>
+          <div class="bar-track"><div class="bar-fill amber" style="width:15%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="ib-icon">❤️</span>
+      <p><strong>Social ROI (không đo bằng tiền):</strong> Giảm ~38% tử vong cấp cứu tương ứng <strong>hàng nghìn sinh mạng mỗi năm</strong>. Nâng năng lực y tế cơ sở 11.000+ trạm xã — thực hiện mục tiêu <strong>Nghị quyết 57-NQ/TW của Bộ Chính trị</strong>. Phòng chống dịch bệnh linh hoạt trong thiên tai.</p>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL: ROADMAP ═══ -->
+  <div class="panel" id="panel-roadmap">
+    <div class="sec-head">
+      <h2>Lộ trình Triển khai</h2>
+      <p>4 giai đoạn từ pilot đến phủ toàn quốc</p>
+    </div>
+
+    <!-- Phase summary -->
+    <div class="kpi-row">
+      <div class="kpi-card" style="border-top: 3px solid var(--blue-600)">
+        <div class="kpi-val" style="font-size:20px">Phase I</div>
+        <div class="kpi-label">Pilot — 6 tháng</div>
+        <div class="kpi-sub" style="color:var(--blue-600)">2025 Q3–Q4</div>
+      </div>
+      <div class="kpi-card" style="border-top: 3px solid var(--green-600)">
+        <div class="kpi-val" style="font-size:20px">Phase II</div>
+        <div class="kpi-label">Mở rộng đô thị — 12 tháng</div>
+        <div class="kpi-sub" style="color:var(--green-600)">2026 Q1–Q4</div>
+      </div>
+      <div class="kpi-card" style="border-top: 3px solid var(--amber-600)">
+        <div class="kpi-val" style="font-size:20px">Phase III</div>
+        <div class="kpi-label">Tỉnh thành — 18 tháng</div>
+        <div class="kpi-sub" style="color:var(--amber-600)">2027 Q1–2028 Q2</div>
+      </div>
+      <div class="kpi-card" style="border-top: 3px solid var(--blue-900)">
+        <div class="kpi-val" style="font-size:20px">Phase IV</div>
+        <div class="kpi-label">Toàn quốc — 18 tháng</div>
+        <div class="kpi-sub" style="color:var(--blue-900)">2028 Q3–2029 Q4</div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot blue"></div>
+        <div class="tl-phase">Phase I — Urban Pilot</div>
+        <div class="tl-card">
+          <h4>🏙️ TP.HCM &amp; Hà Nội — Thử nghiệm lõi</h4>
+          <p>Thiết lập 2 hub LAE tại bệnh viện lớn (BV Chợ Rẫy, BV Bảo Sinh). Triển khai 20 drone, 5 landing pad. Tích hợp Telemedicine + EMR cho 2 bệnh viện. Xây dựng AI routing tối ưu cho hành lang bay đô thị. Hợp tác với CVAA cấp phép bay thử nghiệm.</p>
+          <div class="tl-tags">
+            <span class="tl-tag blue">Budget: $15M</span>
+            <span class="tl-tag blue">20 Drone</span>
+            <span class="tl-tag green">KPI: Delivery &lt;15 phút</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot green"></div>
+        <div class="tl-phase">Phase II — Urban Scale-Up</div>
+        <div class="tl-card">
+          <h4>📈 Mở rộng 5 thành phố lớn</h4>
+          <p>Thêm Đà Nẵng, Huế, Cần Thơ, Bạc Liêu. Tăng fleet lên 80 drone, 20 landing pad. Phát triển EMR đồng bộ toàn tuyến tỉnh–huyện. Triển khai AI predictive demand cho cung ứng thuốc. Mở rộng hành lang bay theo quy hoạch không gian.</p>
+          <div class="tl-tags">
+            <span class="tl-tag green">Budget: $45M</span>
+            <span class="tl-tag green">80 Drone</span>
+            <span class="tl-tag green">7 Thành phố</span>
+            <span class="tl-tag blue">KPI: 90% on-time</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot amber"></div>
+        <div class="tl-phase">Phase III — Provincial Expansion</div>
+        <div class="tl-card">
+          <h4>🗺️ Phủ 34 tỉnh/thành</h4>
+          <p>Mở rộng toàn 34 tỉnh. Fleet 150 drone, hệ landing pad phân bố. Tích hợp LEO satellite cho vùng xa mất sóng 5G. Triển khai Smart Warehouse tại 300+ trạm y tế. Hoàn thiện framework pháp lý LAE y tế.</p>
+          <div class="tl-tags">
+            <span class="tl-tag amber">Budget: $80M</span>
+            <span class="tl-tag amber">150 Drone</span>
+            <span class="tl-tag amber">34 Tỉnh/thành</span>
+            <span class="tl-tag blue">KPI: 85% vùng xa</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot dark"></div>
+        <div class="tl-phase">Phase IV — Full National</div>
+        <div class="tl-card">
+          <h4>🌏 Toàn quốc + Biển đảo</h4>
+          <p>Fleet 200+ drone, biển đảo phủ bởi satellite. EMR toàn quốc đồng bộ — tiến tới "Health Digital Twin" cho mỗi công dân. AI-driven predictive health ở cấp quốc gia. Chuẩn bị migration lên 6G (2028+). Mô hình có thể export cho các quốc gia ASEAN.</p>
+          <div class="tl-tags">
+            <span class="tl-tag dark">Budget: $40M</span>
+            <span class="tl-tag dark">200+ Drone</span>
+            <span class="tl-tag dark">Toàn quốc + Đảo</span>
+            <span class="tl-tag blue">KPI: 95% reach</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Must-have gates -->
+    <div class="sec-head mt-28">
+      <h2>Must-Have Gates — Điều kiện chuyển giai đoạn</h2>
+      <p>Các tiêu chuẩn bắt buộc trước khi bước sang giai đoạn tiếp theo</p>
+    </div>
+    <div class="card-grid card-grid--2">
+      <div class="card">
+        <div class="card-head"><div class="card-icon ci-blue">✅</div><h3>Gate I → II: Pilot Thành công</h3></div>
+        <div class="card-body">Độ chính xác delivery ≥95%, không có tai nạn an toàn, Telemedicine hoạt động, CVAA phê duyệt thương mại, độ hài lòng bệnh nhân ≥85%.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-icon ci-green">✅</div><h3>Gate II → III: Scale Proof</h3></div>
+        <div class="card-body">5 thành phố vận hành ổn định 3 tháng, EMR đồng bộ toàn tuyến, AI routing ≥90% thành công, pháp lý bay ưu tiên được phê duyệt.</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-icon ci-amber">✅</div><h3>Gate III → IV: National Ready</h3></div>
+        <div class="card-body">34 tỉnh có hạ tầng landing pad, satellite backup hoạt động, Smart Warehouse triển khai 300+ vị trí, quy định pháp lý hoàn thiện.</div>
+      </div>3
+      <div class="card">
+        <div class="card-head"><div class="card-icon ci-red">✅</div><h3>Gate IV: Tính bền vững</h3></div>
+        <div class="card-body">Hệ thống tự-tài trợ qua tiết kiệm vận hành, kế hoạch migration 6G chốt, coverage biển đảo 100%, mô hình sẵn sàng export cho ASEAN.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL: RISK ═══ -->
+  <div class="panel" id="panel-risk">
+    <div class="sec-head">
+      <h2>Phân tích Rủi ro &amp; Giảm thiểu</h2>
+      <p>Risk matrix đầy đủ: kỹ thuật, pháp lý, xã hội</p>
+    </div>
+
+    <!-- Summary -->
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--red-600)">3</div><div class="kpi-label">Rủi ro Cao</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--amber-600)">4</div><div class="kpi-label">Rủi ro Trung bình</div></div>
+      <div class="kpi-card"><div class="kpi-val" style="color:var(--green-600)">3</div><div class="kpi-label">Rủi ro Thấp</div></div>
+      <div class="kpi-card"><div class="kpi-val">78%</div><div class="kpi-label">Đã có kế hoạch giảm thiểu</div></div>
+    </div>
+
+    <!-- HIGH -->
+    <div class="risk-section-label" style="color:var(--red-600)">⚠️ Rủi ro Cao — Cần ưu tiên xử lý</div>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div class="risk-badge rb-high">H</div>
+        <div>
+          <h4>Pháp lý &amp; Quy định bay</h4>
+          <p>VN chưa có khung pháp lý riêng cho drone y tế. CVAA có thể chậm hoặc từ chối cấp phép.</p>
+          <div class="risk-fix">→ Hợp tác sớm với CVAA, thử nghiệm restricted zone, lobbying nghị định mới.</div>
+        </div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-badge rb-high">H</div>
+        <div>
+          <h4>Bảo mật dữ liệu y tế</h4>
+          <p>Dữ liệu sức khỏe tuyệt mật. Hack hoặc leak thông tin bệnh nhân gây hậu quả pháp lý và xã hội nghiêm trọng.</p>
+          <div class="risk-fix">→ End-to-end encryption, zero-trust, audit blockchain, HIPAA/GDPR compliance.</div>
+        </div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-badge rb-high">H</div>
+        <div>
+          <h4>Độ tin cậy Drone (Safety)</h4>
+          <p>Tai nạn drone trong đô thị có thể gây hại người dân và mất niềm tin cộng đồng.</p>
+          <div class="risk-fix">→ Redundant systems, geofencing, fail-safe parachute, testing protocol nghiêm ngặt.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDIUM -->
+    <div class="risk-section-label" style="color:var(--amber-600)">⚡ Rủi ro Trung bình</div>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div class="risk-badge rb-med">M</div>
+        <div>
+          <h4>5G Coverage vùng xa</h4>
+          <p>Ngoài đô thị 5G chưa phủ. Drone mất kết nối sẽ không điều khiển được.</p>
+          <div class="risk-fix">→ LEO satellite backup, pre-programmed autonomous flight path.</div>
+        </div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-badge rb-med">M</div>
+        <div>
+          <h4>Chấp nhận xã hội</h4>
+          <p>Người dân lo ngại drone giao thuốc, va chạm, ồn ào trong khu dân cư.</p>
+          <div class="risk-fix">→ Chiến lệ dân vận, app tracking minh bạch, lắng nghe phản hồi cộng đồng.</div>
+        </div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-badge rb-med">M</div>
+        <div>
+          <h4>Thời tiết xấu</h4>
+          <p>Mưa lũ, bão gió mạnh có thể giam thiện hoạt động drone đến 30% thời gian.</p>
+          <div class="risk-fix">→ UAV chịu thời tiết, indoor launch hub, dynamic rerouting.</div>
+        </div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-badge rb-med">M</div>
+        <div>
+          <h4>Thiếu nhân lực kỹ thuật</h4>
+          <p>Nguồn cán bộ drone engineering, AI, IoT còn hạn chế tại Việt Nam.</p>
+          <div class="risk-fix">→ Partnership đại học, chương trình scholarship, transfer learning từ đối tác nước ngoài.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOW -->
+    <div class="risk-section-label" style="color:var(--green-600)">✓ Rủi ro Thấp — Đã có mitigation cơ bản</div>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div class="risk-badge rb-low">L</div>
+        <div>
+          <h4>Nguồn cung UAV hardware</h4>
+          <p>Thị trường medical drone global đã mature, nhiều vendor (DJI, EHang, VN custom).</p>
+          <div class="risk-fix">→ Multi-vendor strategy + domestic manufacturing.</div>
+        </div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-badge rb-low">L</div>
+        <div>
+          <h4>Cloud Infrastructure</h4>
+          <p>AWS, GCP, Azure có region gần VN. FPT Cloud cũng available.</p>
+          <div class="risk-fix">→ Multi-cloud + sovereign cloud (data stays in VN).</div>
+        </div>
+      </div>
+      <div class="risk-card">
+        <div class="risk-badge rb-low">L</div>
+        <div>
+          <h4>Nguồn vốn đầu tư</h4>
+          <p>Chính phủ quan tâm mạnh (Nghị quyết 57), VC/PE interest trong health-tech ASEAN.</p>
+          <div class="risk-fix">→ PPP model + international grants (WHO, Gates Foundation).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="ib-icon">🎯</span>
+      <p><strong>Top 3 ưu tiên cần hành động ngay:</strong> (1) <strong>Pháp lý:</strong> Kickstart dialog với CVAA — đây là long-lead item, cần thời gian nhất. (2) <strong>Bảo mật:</strong> Design security-first từ Ngày 1, không thể retrofit sau. (3) <strong>Safety testing:</strong> Thực hiện 6 tháng controlled testing trước khi mở rộng — không được bỏ qua bước này.</p>
+    </div>
+  </div>
+
+  <!-- ═══ PANEL: SIMULATION ═══ -->
+  <div class="panel" id="panel-simulation">
+    <div class="sec-head">
+      <h2>Mô phỏng Chuyến bay LAE</h2>
+      <p>BV Chợ Rẫy (TP.HCM) → Trạm y tế xã đảo — 45 km, 3 Vertiport relay, giao thuốc cấp cứu</p>
+    </div>
+
+    <!-- Controls + Live KPIs -->
+    <div class="sim-topbar">
+      <div class="sim-controls">
+        <button class="sim-btn active-play" id="sim-play-btn" onclick="simTogglePlay()">⏸ Dừng</button>
+        <button class="sim-btn btn-reset" onclick="simReset()">↺ Đầu lại</button>
+        <div class="sim-speed-group">
+          <span class="sim-speed-label">Tốc độ:</span>
+          <button class="sim-speed-btn active" data-speed="1" onclick="simSetSpeed(1)">1×</button>
+          <button class="sim-speed-btn" data-speed="2" onclick="simSetSpeed(2)">2×</button>
+          <button class="sim-speed-btn" data-speed="4" onclick="simSetSpeed(4)">4×</button>
+          <button class="sim-speed-btn" data-speed="8" onclick="simSetSpeed(8)">8×</button>
+        </div>
+      </div>
+      <div class="sim-live-strip">
+        <div class="sim-live-item">
+          <span class="sli-label">Elapsed</span>
+          <span class="sli-val" id="sim-elapsed">00:00</span>
+        </div>
+        <div class="sim-live-item live-green">
+          <span class="sli-label">Leg</span>
+          <span class="sli-val" id="sim-leg-label">1 / 3</span>
+        </div>
+        <div class="sim-live-item live-amber">
+          <span class="sli-label">Còn lại</span>
+          <span class="sli-val" id="sim-remain">45.0 km</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main layout -->
+    <div class="sim-layout">
+
+      <!-- LEFT: Map -->
+      <div>
+        <div class="sim-map-card">
+          <div class="sim-map-header">
+            <h3>🗺️ Bản đồ Hành trình</h3>
+            <div class="sim-map-legend">
+              <div class="sim-legend-item"><div class="sim-legend-swatch" style="background:#dceefe;border:1px solid #b0d4ef;"></div> Biển</div>
+              <div class="sim-legend-item"><div class="sim-legend-swatch" style="background:#e8efe0;border:1px solid #c5d4b5;"></div> Đất liền</div>
+              <div class="sim-legend-item"><div class="sim-legend-swatch" style="background:#dde9c9;border:1px solid #b8ccaa;"></div> Đảo</div>
+              <div class="sim-legend-item"><div class="sim-legend-swatch" style="background:var(--blue-600);border-radius:50%;"></div> Drone</div>
+            </div>
+          </div>
+
+          <div class="sim-svg-wrap">
+            <!-- viewBox 0 0 800 440 — coordinate system matches plan -->
+            <svg id="sim-map" viewBox="0 0 800 440" preserveAspectRatio="xMidYMid meet">
+
+              <!-- ── WATER background ── -->
+              <rect class="sim-water" x="0" y="0" width="800" height="440"/>
+
+              <!-- ── LAND: HCMC mainland (simplified south-facing shape) ── -->
+              <path class="sim-land" d="
+                M 20,0 L 250,0 L 250,10
+                L 260,25 L 275,35 L 280,55 L 270,80
+                L 255,95 L 240,100 L 220,108 L 200,115
+                L 185,125 L 170,140 L 158,160 L 150,180
+                L 145,200 L 148,215 L 155,230 L 150,245
+                L 140,255 L 125,260 L 110,258 L 95,252
+                L 80,242 L 65,230 L 50,218 L 38,205
+                L 28,190 L 20,175 L 15,160 L 18,145
+                L 22,130 L 20,115 L 15,100 L 10,85
+                L 8,70 L 12,55 L 18,40 L 20,25 Z
+              "/>
+
+              <!-- ── LAND: Bến Tre / Long An peninsula ── -->
+              <path class="sim-land" d="
+                M 200,115 L 230,118 L 260,130 L 290,145
+                L 315,158 L 335,175 L 348,192 L 355,210
+                L 350,225 L 338,238 L 320,248 L 300,255
+                L 278,258 L 258,255 L 240,248 L 225,238
+                L 212,225 L 205,210 L 200,195 L 198,178
+                L 196,160 L 198,140 Z
+              "/>
+
+              <!-- ── LAND: Bến Tre coastal strip (near Vertiport B) ── -->
+              <path class="sim-land" d="
+                M 290,250 L 320,255 L 345,270 L 362,288
+                L 370,305 L 365,320 L 350,330 L 332,335
+                L 312,332 L 295,325 L 282,315 L 275,302
+                L 272,288 L 276,272 Z
+              "/>
+
+              <!-- ── ISLAND: Đảo Long Sơn (near Vertiport C) ── -->
+              <path class="sim-island" d="
+                M 458,340 L 480,332 L 502,335
+                L 518,345 L 525,358 L 520,372
+                L 505,380 L 486,382 L 468,378
+                L 453,368 L 448,355 Z
+              "/>
+
+              <!-- ── ISLAND: Xã đảo Côn Sơn (destination) ── -->
+              <path class="sim-island" d="
+                M 580,355 L 600,348 L 622,350
+                L 638,360 L 643,375 L 635,388
+                L 618,395 L 598,394 L 580,387
+                L 568,376 L 572,362 Z
+              "/>
+
+              <!-- ── Small scatter islands ── -->
+              <ellipse class="sim-island" cx="420" cy="300" rx="12" ry="7"/>
+              <ellipse class="sim-island" cx="540" cy="310" rx="9" ry="5"/>
+              <ellipse class="sim-island" cx="480" cy="410" rx="15" ry="6"/>
+              <ellipse class="sim-island" cx="650" cy="330" rx="8" ry="5"/>
+              <ellipse class="sim-island" cx="700" cy="380" rx="11" ry="6"/>
+              <ellipse class="sim-island" cx="350" cy="385" rx="10" ry="5"/>
+
+              <!-- ── City zone (HCMC urban) ── -->
+              <circle class="sim-city-area" cx="135" cy="95" r="55"/>
+
+              <!-- ── ROUTE LINES (ahead = light dashed, done = blue dashed) ── -->
+              <!-- Full route ahead (initial state — JS will clip via stroke-dashoffset) -->
+              <path class="sim-route-ahead" id="sim-route-full"
+                d="M 103,56 C 180,130 240,180 338,266 C 390,310 430,335 491,367 C 530,378 570,383 609,389"/>
+
+              <!-- Completed portion — drawn via JS updating 'd' attribute -->
+              <path class="sim-route-done" id="sim-route-done" d=""/>
+
+              <!-- ── VERTIPORT MARKERS ── -->
+              <!-- A: BV Chợ Rẫy (103, 56) -->
+              <g id="vp-A">
+                <circle class="sim-vp-circle reached" cx="103" cy="56" r="13"/>
+                <text class="sim-vp-label" x="103" y="60" text-anchor="middle">A</text>
+                <text class="sim-vp-sub" x="103" y="77" text-anchor="middle">BV Chợ Rẫy</text>
+                <text class="sim-vp-sub" x="103" y="87" text-anchor="middle">10.7567°N, 106.6890°E</text>
+              </g>
+
+              <!-- B: Bến Tre relay (338, 266) -->
+              <g id="vp-B">
+                <circle class="sim-vp-circle" cx="338" cy="266" r="13" id="vp-B-circle"/>
+                <text class="sim-vp-label" x="338" y="270" text-anchor="middle">B</text>
+                <text class="sim-vp-sub" x="338" y="287" text-anchor="middle">Bến Tre Relay</text>
+                <text class="sim-vp-sub" x="338" y="297" text-anchor="middle">10.5200°N, 106.8900°E</text>
+              </g>
+
+              <!-- C: Long Sơn relay (491, 367) -->
+              <g id="vp-C">
+                <circle class="sim-vp-circle" cx="491" cy="352" r="13" id="vp-C-circle"/>
+                <text class="sim-vp-label" x="491" y="356" text-anchor="middle">C</text>
+                <text class="sim-vp-sub" x="491" y="393" text-anchor="middle">Đảo Long Sơn</text>
+                <text class="sim-vp-sub" x="491" y="403" text-anchor="middle">10.4100°N, 107.0200°E</text>
+              </g>
+
+              <!-- D: Destination — Côn Sơn (609, 389) -->
+              <g id="vp-D">
+                <!-- Pulse ring -->
+                <circle class="sim-dest-ring" cx="609" cy="373" r="14"/>
+                <circle cx="609" cy="373" r="14" fill="var(--red-100)" stroke="var(--red-600)" stroke-width="2.5"/>
+                <text class="sim-vp-label" x="609" y="377" text-anchor="middle" style="fill:var(--red-600);">D</text>
+                <text class="sim-vp-sub" x="609" y="394" text-anchor="middle">Xã đảo Côn Sơn</text>
+                <text class="sim-vp-sub" x="609" y="404" text-anchor="middle">10.3900°N, 107.1200°E</text>
+              </g>
+
+              <!-- ── DRONE (animated marker) ── -->
+              <g id="sim-drone-group" transform="translate(103, 56)">
+                <!-- Shadow ellipse -->
+                <ellipse class="sim-drone-shadow" cx="0" cy="4" rx="8" ry="3"/>
+                <!-- Drone body -->
+                <g id="sim-drone-icon">
+                  <!-- Arms -->
+                  <line x1="-9" y1="-4" x2="-3" y2="0" stroke="#1E5A8A" stroke-width="2.2" stroke-linecap="round"/>
+                  <line x1="9"  y1="-4" x2="3"  y2="0" stroke="#1E5A8A" stroke-width="2.2" stroke-linecap="round"/>
+                  <line x1="-9" y1="4"  x2="-3" y2="0" stroke="#1E5A8A" stroke-width="2.2" stroke-linecap="round"/>
+                  <line x1="9"  y1="4"  x2="3"  y2="0" stroke="#1E5A8A" stroke-width="2.2" stroke-linecap="round"/>
+                  <!-- Motor discs -->
+                  <circle cx="-9" cy="-4" r="3.5" fill="var(--blue-200)" stroke="var(--blue-600)" stroke-width="1"/>
+                  <circle cx="9"  cy="-4" r="3.5" fill="var(--blue-200)" stroke="var(--blue-600)" stroke-width="1"/>
+                  <circle cx="-9" cy="4"  r="3.5" fill="var(--blue-200)" stroke="var(--blue-600)" stroke-width="1"/>
+                  <circle cx="9"  cy="4"  r="3.5" fill="var(--blue-200)" stroke="var(--blue-600)" stroke-width="1"/>
+                  <!-- Body center -->
+                  <rect x="-4" y="-3.5" width="8" height="7" rx="2.5" fill="var(--blue-700)"/>
+                  <!-- Payload box (medicine) -->
+                  <rect x="-3" y="2" width="6" height="4" rx="1.5" fill="var(--green-600)"/>
+                  <!-- Red cross on payload -->
+                  <line x1="0" y1="3" x2="0" y2="5.2" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+                  <line x1="-1.3" y1="4.1" x2="1.3" y2="4.1" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+                </g>
+              </g>
+
+            </svg><!-- end sim-map -->
+          </div><!-- end sim-svg-wrap -->
+        </div><!-- end sim-map-card -->
+
+        <!-- Vertiport status strip below map -->
+        <div class="sim-vp-strip">
+          <div class="sim-vp-chip vp-reached" id="chip-A">
+            <div class="vpc-code">A</div>
+            <div class="vpc-name">BV Chợ Rẫy</div>
+            <div class="vpc-status">✓ Xuất phát</div>
+          </div>
+          <div class="sim-vp-arrow">›</div>
+          <div class="sim-vp-chip vp-current" id="chip-B">
+            <div class="vpc-code">B</div>
+            <div class="vpc-name">Bến Tre Relay</div>
+            <div class="vpc-status">● Bay đến…</div>
+          </div>
+          <div class="sim-vp-arrow">›</div>
+          <div class="sim-vp-chip" id="chip-C">
+            <div class="vpc-code">C</div>
+            <div class="vpc-name">Đảo Long Sơn</div>
+            <div class="vpc-status">— Chờ</div>
+          </div>
+          <div class="sim-vp-arrow">›</div>
+          <div class="sim-vp-chip" id="chip-D">
+            <div class="vpc-code" style="color:var(--red-600)">D</div>
+            <div class="vpc-name">Xã đảo Côn Sơn</div>
+            <div class="vpc-status">— Chờ</div>
+          </div>
+        </div>
+      </div><!-- end left column -->
+
+      <!-- RIGHT: GPS + Flight Log -->
+      <div class="sim-right">
+
+        <!-- GPS Live -->
+        <div class="sim-gps-card">
+          <div class="sim-gps-head"><span class="gps-dot"></span> GPS Tracking — Thời gian thực</div>
+          <div class="sim-gps-grid">
+            <div class="sim-gps-item">
+              <div class="gps-label">Vĩ độ (Lat)</div>
+              <div class="gps-val" id="gps-lat">10.7567°N</div>
+            </div>
+            <div class="sim-gps-item">
+              <div class="gps-label">Kinh độ (Lng)</div>
+              <div class="gps-val" id="gps-lng">106.6890°E</div>
+            </div>
+            <div class="sim-gps-item">
+              <div class="gps-label">Độ cao (Alt)</div>
+              <div class="gps-val" id="gps-alt">0 m</div>
+            </div>
+            <div class="sim-gps-item">
+              <div class="gps-label">Tốc độ</div>
+              <div class="gps-val" id="gps-speed">0 km/h</div>
+            </div>
+            <div class="sim-gps-item" style="grid-column: 1 / -1;">
+              <div class="gps-label">Pin UAV</div>
+              <div class="gps-val battery-high" id="gps-battery">100%</div>
+              <div class="sim-battery-bar"><div class="sim-battery-fill" id="gps-battery-bar" style="width:100%"></div></div>
+            </div>
+            <div class="sim-gps-item" style="grid-column: 1 / -1;">
+              <div class="gps-label">Payload</div>
+              <div class="gps-val" style="color:var(--green-600); font-size:13px;">💊 Thuốc cấp cứu — 2.4 kg — Nhiệt độ: 4°C ✓</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Flight Log -->
+        <div class="sim-log-card">
+          <div class="sim-log-head">📋 Flight Log — Hồ sơ chuyến bay</div>
+          <div class="sim-log-body" id="sim-log-body">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+      </div><!-- end right column -->
+    </div><!-- end sim-layout -->
+
+    <!-- Info box -->
+    <div class="info-box">
+      <span class="ib-icon">🔧</span>
+      <p><strong>Thiết kế Vertiport Relay:</strong> UAV y tế với tải 2–5 kg có tầm bay thực tế <strong>25–30 km/chu trình</strong>. Do đó 45 km yêu cầu mô hình <strong>relay hopping</strong> qua các Vertiport trung gian. Tại mỗi Vertiport, pin được <strong>swap - thay pin trong 8 phút</strong> (không cần sạc từ đầu). Đây là kiến trúc chuẩn của mọi hệ thống UAV logistics tầm dài.</p>
+    </div>
+  </div><!-- end panel-simulation -->
+
+</div><!-- end wrapper -->
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT — clean, data-driven
+     ═══════════════════════════════════════════ -->
+<script>
+(function () {
+  // --- Tab switching ---
+  const navBtns  = document.querySelectorAll('.nav-btn');
+  const panels   = document.querySelectorAll('.panel');
+
+  navBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = btn.getAttribute('data-tab');
+
+      // update buttons
+      navBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+
+      // update panels
+      panels.forEach(function (p) {
+        p.classList.remove('active');
+        if (p.id === 'panel-' + target) {
+          p.classList.add('active');
+        }
+      });
+
+      // scroll hero out of view smoothly
+      document.querySelector('.wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // --- Accordion layers ---
+  document.querySelectorAll('.arch-header').forEach(function (header) {
+    header.addEventListener('click', function () {
+      var layer = header.closest('.arch-layer');
+      layer.classList.toggle('open');
+    });
+  });
+
+  // ─── SIMULATION ENGINE ───────────────────────────────
+  (function simEngine() {
+
+    // ── Waypoints (SVG coords + real GPS) ──
+    var WP = [
+      { id:'A', x:103, y:56,  lat:10.7567, lng:106.6890, name:'BV Chợ Rẫy' },
+      { id:'B', x:338, y:266, lat:10.5200, lng:106.8900, name:'Bến Tre Relay' },
+      { id:'C', x:491, y:352, lat:10.4100, lng:107.0200, name:'Đảo Long Sơn' },
+      { id:'D', x:609, y:373, lat:10.3900, lng:107.1200, name:'Xã đảo Côn Sơn' }
+    ];
+
+    // ── Leg definitions ──
+    // duration in real-seconds (will be scaled by speed multiplier in the anim loop)
+    var LEGS = [
+      { from:0, to:1, distKm:26, speedKmh:75, altM:80, totalSec:21*60, battStart:100, battEnd:42 },
+      { from:1, to:2, distKm:16, speedKmh:70, altM:60, totalSec:14*60, battStart:100, battEnd:55 },
+      { from:2, to:3, distKm:9,  speedKmh:60, altM:40, totalSec:9*60,  battStart:100, battEnd:72  }
+    ];
+
+    // ── Recharge pause durations (seconds) at B and C ──
+    var RECHARGE_SEC = 8 * 60; // 8 min
+
+    // ── Build a flat timeline: [fly leg0] [recharge at B] [fly leg1] [recharge at C] [fly leg2]
+    // Each segment: { type:'fly'|'recharge', startSec, endSec, leg (if fly), wpIndex (if recharge) }
+    var TIMELINE = [];
+    var cursor = 0;
+    LEGS.forEach(function(leg, i) {
+      TIMELINE.push({ type:'fly', startSec: cursor, endSec: cursor + leg.totalSec, legIdx: i });
+      cursor += leg.totalSec;
+      if (i < LEGS.length - 1) {
+        TIMELINE.push({ type:'recharge', startSec: cursor, endSec: cursor + RECHARGE_SEC, wpIndex: leg.to });
+        cursor += RECHARGE_SEC;
+      }
+    });
+    var TOTAL_SEC = cursor; // total mission seconds
+
+    // ── Flight log event definitions (time in seconds → text) ──
+    var LOG_EVENTS = [
+      { sec:0,    dot:'ld-blue',  text:'<strong>Takeoff</strong> — UAV rời rooftop BV Chợ Rẫy. Altitude: 80m.' },
+      { sec:30,   dot:'ld-blue',  text:'<strong>Cruise</strong> — Hành lang bay ưu tiên, heading SE.' },
+      { sec:5*60, dot:'ld-blue',  text:'<strong>Over urban</strong> — Vượt qua vùng đô thị, alt 80m.' },
+      { sec:12*60,dot:'ld-blue',  text:'<strong>Coastal approach</strong> — Thoát ra bờ biển.' },
+      { sec:21*60,dot:'ld-green', text:'<strong>Landing B</strong> — Đáp an toàn tại Vertiport Bến Tre.' },
+      { sec:21*60+30, dot:'ld-amber', text:'<strong>Battery Swap</strong> — Thay pin trong 8 phút.' },
+      { sec:29*60,dot:'ld-green', text:'<strong>Takeoff B</strong> — Rời Vertiport B, heading đảo.' },
+      { sec:33*60,dot:'ld-blue',  text:'<strong>Over water</strong> — Vượt qua biển, alt 60m.' },
+      { sec:43*60,dot:'ld-green', text:'<strong>Landing C</strong> — Đáp tại Vertiport Đảo Long Sơn.' },
+      { sec:43*60+30, dot:'ld-amber', text:'<strong>Battery Swap</strong> — Thay pin trong 8 phút.' },
+      { sec:51*60,dot:'ld-green', text:'<strong>Takeoff C</strong> — Rời Vertiport C, final leg.' },
+      { sec:55*60,dot:'ld-blue',  text:'<strong>Descent</strong> — Giảm độ cao, approach xã đảo.' },
+      { sec:60*60,dot:'ld-red',   text:'<strong>ARRIVED</strong> — Giao thuốc cấp cứu thành công! 🎉' }
+    ];
+
+    // ── State ──
+    var state = {
+      playing: true,
+      speed: 1,
+      elapsedSec: 0,   // real mission seconds elapsed
+      rafId: null,
+      lastTS: null,
+      logShown: {}     // which log events have been rendered
+    };
+
+    // ── DOM refs (cached once) ──
+    var droneG     = document.getElementById('sim-drone-group');
+    var routeDone  = document.getElementById('sim-route-done');
+    var routeFull  = document.getElementById('sim-route-full');
+    var elapsedEl  = document.getElementById('sim-elapsed');
+    var legLabelEl = document.getElementById('sim-leg-label');
+    var remainEl   = document.getElementById('sim-remain');
+    var gpsLat     = document.getElementById('gps-lat');
+    var gpsLng     = document.getElementById('gps-lng');
+    var gpsAlt     = document.getElementById('gps-alt');
+    var gpsSpeed   = document.getElementById('gps-speed');
+    var gpsBatt    = document.getElementById('gps-battery');
+    var gpsBattBar = document.getElementById('gps-battery-bar');
+    var logBody    = document.getElementById('sim-log-body');
+    var playBtn    = document.getElementById('sim-play-btn');
+
+    // ── Helper: lerp ──
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    // ── Helper: format mm:ss ──
+    function fmtTime(sec) {
+      var m = Math.floor(sec / 60);
+      var s = Math.floor(sec % 60);
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    // ── Helper: calculate remaining km from current elapsed ──
+    function calcRemainKm(elSec) {
+      var done = 0;
+      for (var i = 0; i < TIMELINE.length; i++) {
+        var seg = TIMELINE[i];
+        if (seg.type === 'fly') {
+          var leg = LEGS[seg.legIdx];
+          if (elSec >= seg.endSec) {
+            done += leg.distKm;
+          } else if (elSec > seg.startSec) {
+            var frac = (elSec - seg.startSec) / (seg.endSec - seg.startSec);
+            done += leg.distKm * frac;
+          }
+        }
+      }
+      return Math.max(0, 45 - done);
+    }
+
+    // ── Helper: get current position + flight data from elapsed time ──
+    function getPosition(elSec) {
+      for (var i = 0; i < TIMELINE.length; i++) {
+        var seg = TIMELINE[i];
+        if (elSec <= seg.endSec) {
+          if (seg.type === 'recharge') {
+            // Drone is sitting at the waypoint
+            var wp = WP[seg.wpIndex];
+            return { x: wp.x, y: wp.y, lat: wp.lat, lng: wp.lng, alt: 0, speed: 0, battery: 100, isRecharging: true, legNum: seg.wpIndex };
+          } else {
+            // Flying
+            var leg = LEGS[seg.legIdx];
+            var frac = (elSec - seg.startSec) / (seg.endSec - seg.startSec);
+            frac = Math.max(0, Math.min(1, frac));
+            var fromWP = WP[leg.from];
+            var toWP   = WP[leg.to];
+            return {
+              x:   lerp(fromWP.x, toWP.x, frac),
+              y:   lerp(fromWP.y, toWP.y, frac),
+              lat: lerp(fromWP.lat, toWP.lat, frac),
+              lng: lerp(fromWP.lng, toWP.lng, frac),
+              alt: (frac < 0.08) ? lerp(0, leg.altM, frac / 0.08) :
+                   (frac > 0.92) ? lerp(leg.altM, 0, (frac - 0.92) / 0.08) : leg.altM,
+              speed: leg.speedKmh,
+              battery: lerp(leg.battStart, leg.battEnd, frac),
+              isRecharging: false,
+              legNum: seg.legIdx + 1
+            };
+          }
+        }
+      }
+      // Past end — at destination
+      var dest = WP[3];
+      return { x: dest.x, y: dest.y, lat: dest.lat, lng: dest.lng, alt: 0, speed: 0, battery: 72, isRecharging: false, legNum: 3 };
+    }
+
+    // ── Helper: build SVG path string for completed route up to point ──
+    // We approximate by drawing line segments from A through waypoints to current pos
+    function buildDonePath(pos) {
+      var path = '';
+      var elSec = state.elapsedSec;
+      // Which waypoints have been passed?
+      var passed = [WP[0]]; // always start from A
+      for (var i = 1; i < WP.length; i++) {
+        // Waypoint i is passed if elapsed is past the end of the fly-leg that ends at i
+        var passedTime = 0;
+        for (var j = 0; j < TIMELINE.length; j++) {
+          if (TIMELINE[j].type === 'fly' && LEGS[TIMELINE[j].legIdx].to === i) {
+            passedTime = TIMELINE[j].endSec;
+          }
+        }
+        if (elSec >= passedTime && passedTime > 0) {
+          passed.push(WP[i]);
+        }
+      }
+      if (passed.length === 0) return '';
+      path = 'M ' + passed[0].x + ',' + passed[0].y;
+      for (var k = 1; k < passed.length; k++) {
+        path += ' L ' + passed[k].x + ',' + passed[k].y;
+      }
+      // Line to current drone position
+      path += ' L ' + pos.x.toFixed(1) + ',' + pos.y.toFixed(1);
+      return path;
+    }
+
+    // ── Update vertiport chip states ──
+    function updateChips(elSec) {
+      var chipIds = ['A','B','C','D'];
+      // Times when each waypoint is reached
+      // A: always reached (0)
+      // B: end of leg 0
+      // C: end of leg 1
+      // D: end of leg 2
+      var reachTimes = [0, LEGS[0].totalSec, LEGS[0].totalSec + RECHARGE_SEC + LEGS[1].totalSec,
+                        TIMELINE[TIMELINE.length-1].endSec];
+
+      // Current target: first not-yet-reached
+      var currentTarget = -1;
+      for (var i = 0; i < reachTimes.length; i++) {
+        if (elSec < reachTimes[i]) { currentTarget = i; break; }
+      }
+
+      chipIds.forEach(function(id, idx) {
+        var chip = document.getElementById('chip-' + id);
+        chip.classList.remove('vp-reached', 'vp-current');
+        if (elSec >= reachTimes[idx]) {
+          chip.classList.add('vp-reached');
+          chip.querySelector('.vpc-status').textContent = '✓ Đã đến';
+          chip.querySelector('.vpc-status').style.color = '';
+        } else if (idx === currentTarget) {
+          chip.classList.add('vp-current');
+          chip.querySelector('.vpc-status').textContent = '● Bay đến…';
+          chip.querySelector('.vpc-status').style.color = '';
+        } else {
+          chip.querySelector('.vpc-status').textContent = '— Chờ';
+        }
+      });
+
+      // Update SVG vertiport circle states
+      var vpCircles = { B: document.getElementById('vp-B-circle'), C: document.getElementById('vp-C-circle') };
+      if (vpCircles.B) {
+        if (elSec >= reachTimes[1]) vpCircles.B.classList.add('reached');
+        else vpCircles.B.classList.remove('reached');
+      }
+      if (vpCircles.C) {
+        if (elSec >= reachTimes[2]) vpCircles.C.classList.add('reached');
+        else vpCircles.C.classList.remove('reached');
+      }
+    }
+
+    // ── Render flight log up to current time ──
+    function renderLog(elSec) {
+      LOG_EVENTS.forEach(function(ev, idx) {
+        if (elSec >= ev.sec && !state.logShown[idx]) {
+          state.logShown[idx] = true;
+          var item = document.createElement('div');
+          item.className = 'sim-log-item log-active';
+          item.innerHTML =
+            '<span class="sim-log-time">' + fmtTime(ev.sec) + '</span>' +
+            '<span class="sim-log-dot ' + ev.dot + '"></span>' +
+            '<span class="sim-log-text">' + ev.text + '</span>';
+          logBody.appendChild(item);
+          // Remove active highlight after 3s
+          setTimeout(function() { item.classList.remove('log-active'); }, 3000);
+          // Auto-scroll log
+          logBody.scrollTop = logBody.scrollHeight;
+        }
+      });
+    }
+
+    // ── Main update function ──
+    function update(elSec) {
+      if (elSec > TOTAL_SEC) elSec = TOTAL_SEC;
+
+      var pos = getPosition(elSec);
+
+      // Move drone
+      droneG.setAttribute('transform', 'translate(' + pos.x.toFixed(1) + ',' + pos.y.toFixed(1) + ')');
+
+      // Route trail
+      routeDone.setAttribute('d', buildDonePath(pos));
+
+      // GPS values
+      gpsLat.textContent  = pos.lat.toFixed(4) + '°N';
+      gpsLng.textContent  = pos.lng.toFixed(4) + '°E';
+      gpsAlt.textContent  = Math.round(pos.alt) + ' m';
+      gpsSpeed.textContent = pos.isRecharging ? '0 km/h' : pos.speed + ' km/h';
+
+      // Battery
+      var battPct = Math.round(pos.battery);
+      gpsBatt.textContent = battPct + '%';
+      gpsBattBar.style.width = battPct + '%';
+      gpsBatt.className = 'gps-val ' + (battPct >= 60 ? 'battery-high' : battPct >= 35 ? 'battery-mid' : 'battery-low');
+      gpsBattBar.className = 'sim-battery-fill' + (battPct >= 60 ? '' : battPct >= 35 ? ' mid' : ' low');
+
+      // Top strip
+      elapsedEl.textContent = fmtTime(elSec);
+      var remainKm = calcRemainKm(elSec);
+      remainEl.textContent = remainKm.toFixed(1) + ' km';
+      // Leg label
+      if (pos.isRecharging) {
+        legLabelEl.textContent = 'Sạc pin';
+      } else {
+        legLabelEl.textContent = pos.legNum + ' / 3';
+      }
+
+      // Vertiport chips
+      updateChips(elSec);
+
+      // Flight log
+      renderLog(elSec);
+    }
+
+    // ── Animation loop ──
+    function tick(ts) {
+      if (!state.lastTS) state.lastTS = ts;
+      if (state.playing && state.elapsedSec < TOTAL_SEC) {
+        var dtMs = ts - state.lastTS;
+        // dtMs is real ms. Convert to mission-seconds:
+        // 1 real second → state.speed mission-seconds
+        state.elapsedSec += (dtMs / 1000) * state.speed;
+        if (state.elapsedSec > TOTAL_SEC) state.elapsedSec = TOTAL_SEC;
+      }
+      state.lastTS = ts;
+      update(state.elapsedSec);
+      state.rafId = requestAnimationFrame(tick);
+    }
+
+    // ── Public controls (attached to window for inline onclick) ──
+    window.simTogglePlay = function() {
+      state.playing = !state.playing;
+      playBtn.textContent = state.playing ? '⏸ Dừng' : '▶ Chạy';
+      playBtn.className   = state.playing ? 'sim-btn active-play' : 'sim-btn';
+    };
+
+    window.simReset = function() {
+      state.elapsedSec = 0;
+      state.lastTS = null;
+      state.playing = true;
+      state.logShown = {};
+      playBtn.textContent = '⏸ Dừng';
+      playBtn.className   = 'sim-btn active-play';
+      // Clear log
+      logBody.innerHTML = '';
+      // Reset chips
+      updateChips(0);
+      update(0);
+    };
+
+    window.simSetSpeed = function(s) {
+      state.speed = s;
+      document.querySelectorAll('.sim-speed-btn').forEach(function(b) {
+        b.classList.toggle('active', parseInt(b.getAttribute('data-speed')) === s);
+      });
+    };
+
+    // ── Init: render initial frame + start loop ──
+    // Pre-populate the first log event
+    update(0);
+    renderLog(0);
+    state.rafId = requestAnimationFrame(tick);
+
+  })(); // end simEngine
+
+})();
+</script>
+
+</body>
+</html>
